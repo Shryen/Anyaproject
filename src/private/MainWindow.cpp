@@ -1,5 +1,8 @@
 #include "MainWindow.h"
 #include <QHBoxLayout>
+#include "Buttons/AddButton.h"
+#include "Database/Database.h"
+#include "Sidebar/Sidebar.h"
 
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 	// Start Database
@@ -14,9 +17,13 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 
 	// Setup Layout and widgets
 	QHBoxLayout* MainLayout = new QHBoxLayout(this);
+	MainLayout->setContentsMargins(0, 0, 0, 0);
+	MainLayout->setSpacing(10);
+	Sidebar* sideBar = new Sidebar(this);
 	addButton = new AddButton("Add");
 	connect(addButton, &AddButton::buttonPressed, this, &MainWindow::onAddButtonPressed);
 
+	MainLayout->addWidget(sideBar);
 	MainLayout->addWidget(addButton);
 
 	database->getAllInvoices();

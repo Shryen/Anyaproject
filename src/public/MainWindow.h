@@ -1,7 +1,10 @@
 #pragma once
 #include <QWidget>
-#include "Buttons/AddButton.h"
-#include "Database/Database.h"
+
+
+class AddButton;
+class Database;
+class Sidebar;
 
 class MainWindow : public QWidget {
 	Q_OBJECT
@@ -12,7 +15,11 @@ private slots:
 	void onAddButtonPressed(); 
 
 private:
+	// Buttons
 	AddButton* addButton = nullptr;
 	Database* database = nullptr;
+
+	// Sidebar
+	Sidebar* sidebar = nullptr;
 
 };

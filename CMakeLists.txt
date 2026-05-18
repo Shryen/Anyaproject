@@ -12,17 +12,24 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
-add_executable(CMakeTesting main.cpp  
-    # Headers
+set(SOURCES
+    main.cpp
+    src/private/MainWindow.cpp
+    src/private/Buttons/MainButton.cpp
+    src/private/Buttons/AddButton.cpp
+    src/private/Database/Database.cpp
+    src/private/Sidebar/Sidebar.cpp
+)
+
+set(HEADERS
     src/public/MainWindow.h
     src/public/Buttons/MainButton.h
     src/public/Buttons/AddButton.h
     src/public/Database/Database.h
-    # Source files
-    src/private/MainWindow.cpp
-    src/private/Buttons/MainButton.cpp
-    src/private/Buttons/AddButton.cpp 
-    src/private/Database/Database.cpp "src/private/Sidebar/Sidebar.cpp" "src/public/Sidebar/Sidebar.h")
+    src/public/Sidebar/Sidebar.h
+)
+
+add_executable(CMakeTesting ${SOURCES} ${HEADERS})
 
 target_include_directories(CMakeTesting PRIVATE 
     src/public/
