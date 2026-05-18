@@ -1,0 +1,46 @@
+# Visual Studio
+.vs/
+
+# Build folders
+out/
+build/
+cmake-build-debug/
+cmake-build-release/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+Makefile
+
+# Qt generated files
+*_autogen/
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+*.moc
+
+# Qt Creator
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qmlproject.user
+
+# Binaries
+*.exe
+*.dll
+*.obj
+*.o
+*.pdb
+*.ilk
+*.lib
+
+# Logs/temp
+*.log
+*.tmp
+*.temp
+
+# OS files
+Thumbs.db
+.DS_Store
