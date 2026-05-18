@@ -22,7 +22,7 @@ add_executable(CMakeTesting main.cpp
     src/private/MainWindow.cpp
     src/private/Buttons/MainButton.cpp
     src/private/Buttons/AddButton.cpp 
-    src/private/Database/Database.cpp)
+    src/private/Database/Database.cpp "src/private/Sidebar/Sidebar.cpp" "src/public/Sidebar/Sidebar.h")
 
 target_include_directories(CMakeTesting PRIVATE 
     src/public/
