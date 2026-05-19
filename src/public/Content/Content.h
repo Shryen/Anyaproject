@@ -21,4 +21,6 @@ private:
 	QVBoxLayout* m_layout = nullptr;
 	QVBoxLayout* contentLayout = nullptr;
 	QWidget* contentWidget = nullptr;
+
+	void TestFillupContent();
 };

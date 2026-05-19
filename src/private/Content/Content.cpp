@@ -13,6 +13,9 @@ Content::Content(QWidget* parent) : QWidget(parent)
 void Content::UpdateContent(Database* db) {
 	QVector<Szamla> invoices = db->getAllInvoices();
 
+	TestFillupContent();
+
+	/*
 	for(const Szamla& invoce : invoices){
 		QLabel* label = new QLabel(QString("ID: %1, Név: %2, Összeg: %3, Dátum: %4")
 			.arg(invoce.id)
@@ -24,6 +27,7 @@ void Content::UpdateContent(Database* db) {
 
 		contentLayout->addWidget(label);
 	}
+	*/
 }
 
 void Content::SetupMainLayout()
@@ -69,4 +73,13 @@ void Content::paintEvent(QPaintEvent* event)
 	QPainter p(this);
 	style()->drawPrimitive(
 		QStyle::PE_Widget, &o, &p, this);
+}
+
+
+void Content::TestFillupContent() {
+	for (int i = 0; i < 50; ++i) {
+		QLabel* label = new QLabel(QString("Test %1").arg(i), this);
+		label->setStyleSheet("color: black; font-size: 24pt;");
+		contentLayout->addWidget(label);
+	}
 }
