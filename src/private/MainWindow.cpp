@@ -2,6 +2,7 @@
 #include <QHBoxLayout>
 #include "Buttons/AddButton.h"
 #include "Database/Database.h"
+#include "Content/Content.h"
 #include "Sidebar/Sidebar.h"
 
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
@@ -19,14 +20,17 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 	QHBoxLayout* MainLayout = new QHBoxLayout(this);
 	MainLayout->setContentsMargins(0, 0, 0, 0);
 	MainLayout->setSpacing(10);
-	Sidebar* sideBar = new Sidebar(this);
-	addButton = new AddButton("Add");
+
+	sideBar = new Sidebar(this);
+	contentWidget = new Content(this);
+
 	connect(addButton, &AddButton::buttonPressed, this, &MainWindow::onAddButtonPressed);
 
 	MainLayout->addWidget(sideBar);
 	MainLayout->addWidget(addButton);
+	MainLayout->addWidget(contentWidget);
 
-	database->getAllInvoices();
+	contentWidget->UpdateContent(database);
 }
 
 void MainWindow::onAddButtonPressed() {

@@ -5,6 +5,7 @@
 class AddButton;
 class Database;
 class Sidebar;
+class Content;
 
 class MainWindow : public QWidget {
 	Q_OBJECT
@@ -19,7 +20,7 @@ private:
 	AddButton* addButton = nullptr;
 	Database* database = nullptr;
 
-	// Sidebar
-	Sidebar* sidebar = nullptr;
-
+	// Application
+	Sidebar* sideBar = nullptr;
+	Content* contentWidget = nullptr;
 };
