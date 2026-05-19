@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 	// Setup Layout and widgets
 	QHBoxLayout* MainLayout = new QHBoxLayout(this);
 	MainLayout->setContentsMargins(0, 0, 0, 0);
-	MainLayout->setSpacing(10);
+	MainLayout->setSpacing(0);
 
 	sideBar = new Sidebar(this);
 	contentWidget = new Content(this);

@@ -11,6 +11,10 @@ public:
 
 	void SetupMainLayout();
 
+	void SetupContentWidget();
+
+	void paintEvent(QPaintEvent* event) override;
+
 	void UpdateContent(Database* db);
 
 private:
