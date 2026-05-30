@@ -1,9 +1,10 @@
-#include <QVBoxLayout>
-#include <QPushButton>
 #include "Sidebar/Sidebar.h"
-#include <QStyleOption>
-#include <QPainter>
+
 #include <QLabel>
+#include <QPainter>
+#include <QPushButton>
+#include <QStyleOption>
+#include <QVBoxLayout>
 
 Sidebar::Sidebar(QWidget* parent) : QWidget(parent)
 {
@@ -16,10 +17,10 @@ Sidebar::Sidebar(QWidget* parent) : QWidget(parent)
 	layout->setSpacing(10);
 	layout->addWidget(titleLabel);
 	layout->addWidget(receiptsButton);
-    layout->addWidget(profitsButton);
+	layout->addWidget(profitsButton);
 	setFixedWidth(220);
 
-    layout->addStretch();
+	layout->addStretch();
 }
 
 void Sidebar::SetupButtons()
@@ -68,12 +69,10 @@ void Sidebar::SetupSidebarStyle()
 	)");
 }
 
-// Need this for using stylesheets on the widget, otherwise it won't work
 void Sidebar::paintEvent(QPaintEvent* event)
 {
 	QStyleOption o;
 	o.initFrom(this);
 	QPainter p(this);
-	style()->drawPrimitive(
-		QStyle::PE_Widget, &o, &p, this);
+	style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
 }

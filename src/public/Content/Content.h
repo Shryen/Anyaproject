@@ -3,6 +3,7 @@
 
 class QVBoxLayout;
 class Database;
+class QScrollArea;
 
 class Content : public QWidget {
 	Q_OBJECT
@@ -21,6 +22,7 @@ private:
 	QVBoxLayout* m_layout = nullptr;
 	QVBoxLayout* contentLayout = nullptr;
 	QWidget* contentWidget = nullptr;
+	QScrollArea* scrollArea = nullptr;
 
 	void TestFillupContent();
 };

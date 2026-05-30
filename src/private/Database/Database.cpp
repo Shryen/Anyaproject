@@ -71,8 +71,8 @@ void Database::insertData(const QString& name, double amount, const QString& dat
     sqlite3_finalize(statement);
 }
 
-QVector<Szamla> Database::getAllInvoices() {
-    QVector<Szamla> szamlak;
+QVector<Invoice> Database::getAllInvoices() {
+    QVector<Invoice> szamlak;
     if (!db) {
         qDebug() << "Addatbázis nem elérhető: " << sqlite3_errmsg(db);
         return szamlak;
@@ -83,7 +83,7 @@ QVector<Szamla> Database::getAllInvoices() {
 
     if (sqlite3_prepare_v2(db, sql, -1, &statement, nullptr) == SQLITE_OK) {
         while (sqlite3_step(statement) == SQLITE_ROW) {
-            Szamla szamla;
+            Invoice szamla;
             szamla.id = sqlite3_column_int(statement, 0);
             szamla.nev = QString::fromUtf8((const char*)sqlite3_column_text(statement, 1));
             szamla.osszeg = sqlite3_column_double(statement, 2);

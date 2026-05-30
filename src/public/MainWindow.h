@@ -20,7 +20,6 @@ private:
 	AddButton* addButton = nullptr;
 	Database* database = nullptr;
 
-	// Application
 	Sidebar* sideBar = nullptr;
 	Content* contentWidget = nullptr;
 };

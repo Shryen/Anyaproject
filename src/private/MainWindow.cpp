@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 	setWindowTitle("Számlák");
 	setFixedSize(QSize{ 1280,720 });
 	setStyleSheet(R"(
-		background-color: #f5f5f5;
+		background-color: #fff5ee;
 	)");
 
 	// Setup Layout and widgets
@@ -24,10 +24,8 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 	sideBar = new Sidebar(this);
 	contentWidget = new Content(this);
 
-	connect(addButton, &AddButton::buttonPressed, this, &MainWindow::onAddButtonPressed);
 
 	MainLayout->addWidget(sideBar);
-	MainLayout->addWidget(addButton);
 	MainLayout->addWidget(contentWidget);
 
 	contentWidget->UpdateContent(database);

@@ -16,10 +16,10 @@ public:
 	void paintEvent(QPaintEvent* event) override;
 
 private:
-	QPushButton* receiptsButton;
-	QPushButton* profitsButton;
+	QPushButton* receiptsButton = nullptr;
+	QPushButton* profitsButton = nullptr;
 
-	QVBoxLayout* layout;
+	QVBoxLayout* layout = nullptr;
 
-	QLabel* titleLabel;
+	QLabel* titleLabel = nullptr;
 };
