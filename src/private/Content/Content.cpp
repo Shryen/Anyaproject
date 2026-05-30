@@ -2,7 +2,7 @@
 #include "Content/ContentHeaderWidget.h"
 #include <QVBoxLayout>
 #include <QLabel>
-#include "Database/Database.h";
+#include "Database/Database.h"
 #include <QStyleOption>
 #include <QPainter>
 #include <QScrollArea>

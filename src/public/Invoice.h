@@ -2,8 +2,8 @@
 #include <QString>
 
 struct Invoice {
-	int id;
-	QString nev;
-	double osszeg;
-	QString datum;
+	int id{ 0 };
+	QString nev{ "" };
+	double osszeg{ 0.0 };
+	QString datum{ "" };
 };
