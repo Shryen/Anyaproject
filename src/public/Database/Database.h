@@ -9,7 +9,7 @@ public:
 
 	QVector<Invoice> getAllInvoices();
 
-	void insertData(const QString& name, double amount, const QString& date);
+	void insertData(const Invoice& Data);
 
 private:
 	sqlite3* db = nullptr;

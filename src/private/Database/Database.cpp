@@ -47,7 +47,7 @@ void Database::CreateTable() {
         qDebug() << "Tábla létrehozva vagy már létezik.";
 }
 
-void Database::insertData(const QString& name, double amount, const QString& date) {
+void Database::insertData(const Invoice& Data) {
     if (!db) {
         qDebug() << "Adatbázis nem elérhető: " << sqlite3_errmsg(db);
         return;
@@ -57,9 +57,9 @@ void Database::insertData(const QString& name, double amount, const QString& dat
     sqlite3_stmt* statement = nullptr;
 
     if (sqlite3_prepare_v2(db, sqlStmt, -1, &statement, nullptr) == SQLITE_OK) {
-        sqlite3_bind_text(statement, 1, name.toStdString().c_str(), -1, SQLITE_TRANSIENT);
-        sqlite3_bind_double(statement, 2, amount);
-        sqlite3_bind_text(statement, 3, date.toStdString().c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(statement, 1, Data.nev.toStdString().c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_double(statement, 2, Data.osszeg);
+        sqlite3_bind_text(statement, 3, Data.datum.toStdString().c_str(), -1, SQLITE_TRANSIENT);
 
         if (sqlite3_step(statement) == SQLITE_DONE)
             qDebug() << "Adat rögzítve";
