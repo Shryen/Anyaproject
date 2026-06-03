@@ -21,18 +21,33 @@ QWidget* ContentHeaderWidget::CreateAddButtonWidget()
 {
 	QWidget* buttonWidget = new QWidget(this);
 	QHBoxLayout* buttonLayout = new QHBoxLayout(buttonWidget);
+	buttonLayout->setContentsMargins(0, 10, 0, 10);
 	buttonLayout->setAlignment(Qt::AlignRight);
 
 	QPushButton* addButton = new QPushButton("+", buttonWidget);
 	addButton->setObjectName("addButton");
 	addButton->setFixedSize(QSize{ 50,50 });
 	addButton->setStyleSheet(R"(
-			font-size: 18pt;
+		QPushButton#addButton {
+			font-size: 22pt;
 			font-weight: bold;
-			color: rgba(0,0,0,0.5);
-			background-color: white;
-			border-radius: 5px;
-			border: 2px solid #5fa8d3;
+			color: #f0ead6;
+			background-color: #5fa8d3;
+			border-radius: 8px;
+			border: 2px solid #4f98c3;
+			padding: 0px;
+			text-align: center;
+		}
+
+		QPushButton#addButton:hover {
+			background-color: #4f98c3;
+			border-color: #3f88b3;
+		}
+
+		QPushButton#addButton:pressed {
+			background-color: #3f88b3;
+			border-color: #2f789f;
+		}
 	)");
 
 	addButton->setCursor(Qt::PointingHandCursor);
