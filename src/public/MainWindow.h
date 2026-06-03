@@ -1,6 +1,6 @@
 #pragma once
 #include <QWidget>
-
+#include "Invoice.h"
 
 class AddButton;
 class Database;
@@ -13,7 +13,7 @@ public:
 	MainWindow(QWidget *parent = nullptr);
 
 private slots:
-	void onAddButtonPressed(); 
+	void onDataReceived(const Invoice& Data); 
 
 private:
 	// Buttons

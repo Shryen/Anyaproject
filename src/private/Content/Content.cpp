@@ -25,20 +25,33 @@ void Content::BindDependencies()
 		stackedWidget->setCurrentWidget(contentWidget);
 	});
 
+	connect(addContentWidget, &AddContentWidget::AddRequested, this, [this](const Invoice& Data) {
+		emit AddToDatabaseRequested(Data);
+		stackedWidget->setCurrentWidget(contentWidget);
+	});
+
 	connect(headerWidget, &ContentHeaderWidget::AddButtonClicked,
 		this, [this]() {
 		stackedWidget->setCurrentWidget(addContentWidget);
 	});
+
 }
 
 void Content::UpdateContent(Database* db) {
+	while (QLayoutItem* item = invoiceLayout->takeAt(0)) {
+		if (QWidget* widget = item->widget()) {
+			widget->deleteLater();
+		}
+		delete item;
+	}
+
 	QVector<Invoice> invoices = db->getAllInvoices();
-	
-	TestFillupContent();
+	std::sort(invoices.begin(), invoices.end(), [](const Invoice& a, const Invoice& b) {
+		return a.id > b.id;
+	});
 
-	for(const Invoice& invoce : invoices){
-		InvoiceWidget* widget = new InvoiceWidget(invoce, scrollArea->widget());
-
+	for(const Invoice& invoice : invoices){
+		InvoiceWidget* widget = new InvoiceWidget(invoice, scrollArea->widget());
 		invoiceLayout->addWidget(widget);
 	}
 }

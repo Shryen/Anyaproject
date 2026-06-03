@@ -1,5 +1,6 @@
 #pragma once
 #include <QWidget>
+#include "Invoice.h"
 
 class QPushButton;
 class QLineEdit;
@@ -15,6 +16,7 @@ public:
 
 signals:
 	void BackRequested();
+	void AddRequested(const Invoice& data);
 private:
 	QLabel* titleLabel = nullptr;
 	QPushButton* backButton = nullptr;

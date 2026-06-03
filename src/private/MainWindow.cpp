@@ -24,13 +24,15 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 	sideBar = new Sidebar(this);
 	contentWidget = new Content(this);
 
-
 	MainLayout->addWidget(sideBar);
 	MainLayout->addWidget(contentWidget);
 
 	contentWidget->UpdateContent(database);
+
+	connect(contentWidget, &Content::AddToDatabaseRequested, this,&MainWindow::onDataReceived);
 }
 
-void MainWindow::onAddButtonPressed() {
-	database->insertData("Jani", 2.0, "2026/05/13");
+void MainWindow::onDataReceived(const Invoice& Data) {
+	database->insertData(Data);
+	contentWidget->UpdateContent(database);
 }

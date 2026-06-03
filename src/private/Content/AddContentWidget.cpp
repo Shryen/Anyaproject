@@ -100,6 +100,15 @@ QWidget* AddContentWidget::CreateFormWidget()
 	dateEdit = new QDateEdit(formWidget);
 	addButton = new QPushButton("Hozzáadás", formWidget);
 
+	connect(addButton, &QPushButton::clicked, this, [this]() {
+		Invoice invoice;
+		invoice.nev = nameEdit->text();
+		invoice.osszeg = amountEdit->text().toDouble();
+		invoice.datum = dateEdit->date().toString("yyyy-MM-dd");
+
+		emit AddRequested(invoice);
+	});
+
 	nameEdit->setPlaceholderText("Név");
 	amountEdit->setPlaceholderText("Összeg");
 	dateEdit->setCalendarPopup(true);

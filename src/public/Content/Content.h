@@ -1,5 +1,6 @@
 #pragma once
 #include <QWidget>
+#include "Invoice.h"
 
 class QLabel;
 class QStackedWidget;
@@ -20,6 +21,9 @@ public:
 	void paintEvent(QPaintEvent* event) override;
 
 	void UpdateContent(Database* db);
+
+signals:
+	void AddToDatabaseRequested(const Invoice& data);
 
 private:
 	QVBoxLayout* m_layout = nullptr;
