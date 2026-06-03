@@ -35,6 +35,9 @@ QWidget* ContentHeaderWidget::CreateAddButtonWidget()
 			border: 2px solid #5fa8d3;
 	)");
 
+	addButton->setCursor(Qt::PointingHandCursor);
+	connect(addButton, &QPushButton::clicked, this, &ContentHeaderWidget::AddButtonClicked);
+
 	buttonLayout->addWidget(addButton);
 
 	return buttonWidget;
