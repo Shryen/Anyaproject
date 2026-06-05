@@ -38,7 +38,8 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 
 void MainWindow::onInvoiceSelected(int id)
 {
-	
+	database->deleteData(id);
+	contentWidget->UpdateContent(database);
 }
 
 void MainWindow::onDataReceived(const Invoice& Data) {

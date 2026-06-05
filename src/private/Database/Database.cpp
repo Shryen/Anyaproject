@@ -71,6 +71,29 @@ void Database::insertData(const Invoice& Data) {
     sqlite3_finalize(statement);
 }
 
+void Database::deleteData(int id)
+{
+    if (!db) {
+        qDebug() << "Adatbázis nem elérhető: " << sqlite3_errmsg(db);
+        return;
+    }
+
+	const char* sqlStmt = "DELETE FROM szamlak WHERE id = ?";
+	sqlite3_stmt* statement = nullptr;
+
+    if(sqlite3_prepare_v2(db, sqlStmt, -1, &statement, nullptr) == SQLITE_OK){
+		sqlite3_bind_text(statement, 1, QString::number(id).toStdString().c_str(), -1, SQLITE_TRANSIENT);
+
+		if (sqlite3_step(statement) == SQLITE_DONE)
+            qDebug() << "Adat törölve";
+        else
+            qDebug() << "Nem sikerült törölni az adatot: " << sqlite3_errmsg(db);
+    } else
+		qDebug() << "Prepare failed: " << sqlite3_errmsg(db);
+
+    sqlite3_finalize(statement);
+}
+
 QVector<Invoice> Database::getAllInvoices() {
     QVector<Invoice> szamlak;
     if (!db) {

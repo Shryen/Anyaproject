@@ -10,6 +10,7 @@ public:
 	QVector<Invoice> getAllInvoices();
 
 	void insertData(const Invoice& Data);
+	void deleteData(int id);
 
 private:
 	sqlite3* db = nullptr;
