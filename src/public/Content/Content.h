@@ -51,7 +51,6 @@ private:
 
 	SortType currentSort = SortType::ById;
 
-	void TestFillupContent();
 	QLabel* SetupTitleLabel();
 	void SetupScrollArea();
 	void SetupWidget();

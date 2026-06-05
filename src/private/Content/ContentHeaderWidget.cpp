@@ -1,5 +1,6 @@
 #include "Content/ContentHeaderWidget.h"
 
+#include <QGraphicsDropShadowEffect>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -173,7 +174,6 @@ QWidget* ContentHeaderWidget::CreateProfitWidget()
 	QLabel* profitLabel = new QLabel("Bevétel: 0 €", profitWidget);
 	profitLabel->setAlignment(Qt::AlignCenter);
 
-
 	QHBoxLayout* layout = new QHBoxLayout(profitWidget);
 	layout->addWidget(profitLabel);
 	layout->setContentsMargins(0, 0, 0, 0);
@@ -191,6 +191,12 @@ QWidget* ContentHeaderWidget::CreateProfitWidget()
 			font-size: 22pt;
 		}
 	)");
+
+	QGraphicsDropShadowEffect* shadow = new QGraphicsDropShadowEffect(profitWidget);
+	shadow->setBlurRadius(20);
+	shadow->setColor(QColor("#5fa8d3"));
+	shadow->setOffset(0, 0);
+	profitWidget->setGraphicsEffect(shadow);
 
 	return profitWidget;
 }

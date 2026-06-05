@@ -49,9 +49,6 @@ void MainWindow::onDeleteRequested()
 	QPushButton* YesButton = confirmDialog->addButton(tr("Igen"), QMessageBox::ActionRole);
 	QPushButton* NoButton = confirmDialog->addButton(tr("Nem"), QMessageBox::ActionRole);
 
-	confirmDialog->setMinimumSize(QSize{ 400,200 });
-
-
 	confirmDialog->setStyleSheet(R"(
     QMessageBox {
         background-color: #fff5ee;
