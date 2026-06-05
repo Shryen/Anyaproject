@@ -22,4 +22,6 @@ private:
 
 	Sidebar* sideBar = nullptr;
 	Content* contentWidget = nullptr;
+
+	int selectedInvoiceId = -1;
 };

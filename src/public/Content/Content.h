@@ -11,6 +11,13 @@ class QPaintEvent;
 class AddContentWidget;
 class ContentHeaderWidget;
 
+enum class SortType {
+	ById,
+	ByName,
+	ByAmount,
+	ByDate
+};
+
 class Content : public QWidget {
 	Q_OBJECT
 public:
@@ -24,6 +31,7 @@ public:
 
 signals:
 	void AddToDatabaseRequested(const Invoice& data);
+	void OnListChanged();
 
 private:
 	QVBoxLayout* m_layout = nullptr;
@@ -35,6 +43,7 @@ private:
 	AddContentWidget* addContentWidget = nullptr;
 	ContentHeaderWidget* headerWidget = nullptr;
 
+	SortType currentSort = SortType::ById;
 
 	void TestFillupContent();
 	QLabel* SetupTitleLabel();

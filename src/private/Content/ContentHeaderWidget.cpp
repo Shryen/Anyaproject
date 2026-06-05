@@ -4,10 +4,13 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QComboBox>
 
 ContentHeaderWidget::ContentHeaderWidget(QWidget* parent)
 	: QWidget(parent)
 {
+	SetupSortComboBox();
+
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->setSpacing(0);
@@ -15,6 +18,75 @@ ContentHeaderWidget::ContentHeaderWidget(QWidget* parent)
 	layout->addWidget(CreateProfitWidget(), 0, Qt::AlignHCenter);
 	layout->addWidget(CreateAddButtonWidget());
 	layout->addWidget(CreateHeaderWidget());
+}
+
+void ContentHeaderWidget::SetupSortComboBox()
+{
+	SortComboBox = new QComboBox(this);
+	SortComboBox->setObjectName("sortComboBox");
+	SortComboBox->setFixedHeight(50);
+	SortComboBox->setMinimumWidth(180);
+	SortComboBox->addItem("Rendezés: ");
+	SortComboBox->addItem("Név szerint");
+	SortComboBox->addItem("Összeg szerint");
+	SortComboBox->addItem("Dátum szerint");
+
+	connect(SortComboBox, &QComboBox::currentIndexChanged,
+		this, [this](int sortOption) {
+		emit SortChanged(sortOption);
+	});
+
+
+
+
+	SortComboBox->setStyleSheet(R"(
+		QComboBox#sortComboBox {
+			color: rgba(0, 0, 0, 0.75);
+			background-color: #fff5ee;
+			border: 2px solid #5fa8d3;
+			border-radius: 6px;
+			padding: 6px 28px 6px 10px;
+			font-size: 13pt;
+			font-weight: bold;
+		}
+
+		QComboBox#sortComboBox:hover {
+			background-color: white;
+			border-color: #4f98c3;
+		}
+
+		QComboBox#sortComboBox:focus {
+			border-color: #3f88b3;
+		}
+
+		QComboBox#sortComboBox::drop-down {
+			subcontrol-origin: padding;
+			subcontrol-position: top right;
+			width: 28px;
+			border-left: 1px solid #5fa8d3;
+			border-top-right-radius: 4px;
+			border-bottom-right-radius: 4px;
+			background-color: #5fa8d3;
+		}
+
+		QComboBox#sortComboBox::down-arrow {
+			width: 0px;
+			height: 0px;
+			border-left: 5px solid transparent;
+			border-right: 5px solid transparent;
+			border-top: 6px solid #f0ead6;
+		}
+
+		QComboBox#sortComboBox QAbstractItemView {
+			color: black;
+			background-color: white;
+			border: 1px solid #5fa8d3;
+			selection-background-color: #5fa8d3;
+			selection-color: white;
+			outline: none;
+			font-size: 12pt;
+		}
+	)");
 }
 
 QWidget* ContentHeaderWidget::CreateAddButtonWidget()
@@ -27,6 +99,15 @@ QWidget* ContentHeaderWidget::CreateAddButtonWidget()
 	QPushButton* addButton = new QPushButton("+", buttonWidget);
 	addButton->setObjectName("addButton");
 	addButton->setFixedSize(QSize{ 50,50 });
+
+	addButton->setCursor(Qt::PointingHandCursor);
+	connect(addButton, &QPushButton::clicked, this, &ContentHeaderWidget::AddButtonClicked);
+
+	buttonLayout->addStretch();
+	buttonLayout->addWidget(SortComboBox);
+	buttonLayout->addWidget(addButton);
+
+
 	addButton->setStyleSheet(R"(
 		QPushButton#addButton {
 			font-size: 22pt;
@@ -50,10 +131,6 @@ QWidget* ContentHeaderWidget::CreateAddButtonWidget()
 		}
 	)");
 
-	addButton->setCursor(Qt::PointingHandCursor);
-	connect(addButton, &QPushButton::clicked, this, &ContentHeaderWidget::AddButtonClicked);
-
-	buttonLayout->addWidget(addButton);
 
 	return buttonWidget;
 }

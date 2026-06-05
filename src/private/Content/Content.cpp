@@ -35,6 +35,10 @@ void Content::BindDependencies()
 		stackedWidget->setCurrentWidget(addContentWidget);
 	});
 
+	connect(headerWidget, &ContentHeaderWidget::SortChanged, this, [this](int sortOption) {
+		currentSort = static_cast<SortType>(sortOption);
+		emit OnListChanged();
+	});
 }
 
 void Content::UpdateContent(Database* db) {
@@ -46,13 +50,50 @@ void Content::UpdateContent(Database* db) {
 	}
 
 	QVector<Invoice> invoices = db->getAllInvoices();
-	std::sort(invoices.begin(), invoices.end(), [](const Invoice& a, const Invoice& b) {
-		return a.id > b.id;
-	});
+
+	switch (currentSort) {
+		case SortType::ById:
+			std::sort(invoices.begin(), invoices.end(), [](const Invoice& a, const Invoice& b) {
+				return a.id > b.id;
+			});
+		break;
+		case SortType::ByName:
+			std::sort(invoices.begin(), invoices.end(), [](const Invoice& a, const Invoice& b) {
+				return a.nev < b.nev;
+			});
+			break;
+		case SortType::ByAmount:
+			std::sort(invoices.begin(), invoices.end(), [](const Invoice& a, const Invoice& b) {
+				return a.osszeg > b.osszeg;
+			});
+			break;
+		case SortType::ByDate:
+			std::sort(invoices.begin(), invoices.end(), [](const Invoice& a, const Invoice& b) {
+				return a.datum > b.datum;
+			});
+			break;
+	}
+
 
 	for(const Invoice& invoice : invoices){
 		InvoiceWidget* widget = new InvoiceWidget(invoice, scrollArea->widget());
 		invoiceLayout->addWidget(widget);
+		connect(widget, &InvoiceWidget::InvoiceSelected, this, [this, widget](int selectedIndex) {
+			widget->setStyleSheet(R"(
+				InvoiceWidget {
+					border: 2px solid #5fa8d3;
+					background-color: rgba(95, 168, 211, 0.1);
+				}
+				QLabel {
+					color: black;
+					font-size: 16pt;
+					border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+					padding: 8px;
+				}
+			)");
+			qDebug() << "Selected Invoice ID: " << selectedIndex;
+			emit OnListChanged();
+		});
 	}
 }
 

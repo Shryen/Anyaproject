@@ -2,6 +2,7 @@
 #include "Invoice.h"
 #include <QLabel>
 #include <QHBoxLayout>
+#include <QMouseEvent>
 
 InvoiceWidget::InvoiceWidget(const Invoice& invoice, QWidget* parent)
 	: QWidget(parent)
@@ -32,4 +33,10 @@ InvoiceWidget::InvoiceWidget(const Invoice& invoice, QWidget* parent)
 			padding: 8px;
 		}
 	)");
+}
+
+void InvoiceWidget::mousePressEvent(QMouseEvent* event)
+{
+	if(event->button() == Qt::LeftButton)
+		emit InvoiceSelected(idLabel->text().toInt());
 }
