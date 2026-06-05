@@ -1,5 +1,6 @@
 #include "Database/Database.h"
 #include <QDebug>
+#include <QString>
 
 Database::Database() {
     SetupDatabase();
@@ -94,6 +95,17 @@ void Database::deleteData(int id)
     sqlite3_finalize(statement);
 }
 
+QString Database::getInvoiceInfo(int id)
+{
+	Invoice invoice = getInvoiceById(id);
+ 
+    return QString("<p style='text-align:center; font-size: 14pt;'>ID: %1 | Név: %2 | Összeg: %3 | Dátum: %4</p>")
+        .arg(invoice.id)
+        .arg(invoice.nev)
+        .arg(invoice.osszeg)
+        .arg(invoice.datum);
+}
+
 QVector<Invoice> Database::getAllInvoices() {
     QVector<Invoice> szamlak;
     if (!db) {
@@ -124,4 +136,28 @@ QVector<Invoice> Database::getAllInvoices() {
     sqlite3_finalize(statement);
     return szamlak;
 
+}
+
+Invoice Database::getInvoiceById(int id)
+{
+    if (!db) {
+        qDebug() << "Addatbázis nem elérhető: " << sqlite3_errmsg(db);
+    }
+    Invoice invoice;
+    const char* sql = "SELECT * from szamlak WHERE id = ?";
+	sqlite3_stmt* statement = nullptr;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &statement, nullptr) == SQLITE_OK) {
+        sqlite3_bind_int(statement, 1, id);
+        if (sqlite3_step(statement) == SQLITE_ROW) {
+            invoice.id = sqlite3_column_int(statement, 0);
+            invoice.nev = QString::fromUtf8((const char*)sqlite3_column_text(statement, 1));
+            invoice.osszeg = sqlite3_column_double(statement, 2);
+            invoice.datum = QString::fromUtf8((const char*)sqlite3_column_text(statement, 3));
+        }
+    }
+
+    sqlite3_finalize(statement);
+
+    return invoice;
 }

@@ -1,9 +1,11 @@
-#include "MainWindow.h"
 #include <QHBoxLayout>
+#include <QMessageBox>
+#include "MainWindow.h"
 #include "Buttons/AddButton.h"
 #include "Database/Database.h"
 #include "Content/Content.h"
 #include "Sidebar/Sidebar.h"
+
 
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 	// Start Database
@@ -39,10 +41,55 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 
 void MainWindow::onDeleteRequested()
 {
-	if(selectedInvoiceId != -1){
-		database->deleteData(selectedInvoiceId);
-		contentWidget->UpdateContent(database);
+	QString message = "<h1>Biztosan szeretnéd törölni a kiválasztott számlát?</h1>";
+	QString selectedInvoiceInfo = database->getInvoiceInfo(selectedInvoiceId);
+	QMessageBox* confirmDialog = new QMessageBox(this);
+	confirmDialog->setText(message);
+	confirmDialog->setInformativeText(selectedInvoiceInfo);
+	QPushButton* YesButton = confirmDialog->addButton(tr("Igen"), QMessageBox::ActionRole);
+	QPushButton* NoButton = confirmDialog->addButton(tr("Nem"), QMessageBox::ActionRole);
+
+	confirmDialog->setMinimumSize(QSize{ 400,200 });
+
+
+	confirmDialog->setStyleSheet(R"(
+    QMessageBox {
+        background-color: #fff5ee;
+    }
+    QLabel {
+        color: black;
+        text-align: center;
+        qproperty-alignment: AlignCenter;
+    }
+    QPushButton {
+        background-color: #5fa8d3;
+        color: #f0ead6;
+        font-weight: bold;
+        font-size: 13pt;
+        border-radius: 6px;
+        border: 2px solid #4f98c3;
+        padding: 6px 20px;
+        min-width: 80px;
+    }
+    QPushButton:hover {
+        background-color: #4f98c3;
+    }
+    QPushButton:pressed {
+        background-color: #3f88b3;
+    }
+)");
+	confirmDialog->exec();
+
+	if (confirmDialog->clickedButton() == YesButton) {
+		if (selectedInvoiceId != -1) {
+			database->deleteData(selectedInvoiceId);
+			contentWidget->UpdateContent(database);
+		}
 	}
+	else if (confirmDialog->clickedButton() == NoButton) {
+		
+	}
+	
 }
 
 void MainWindow::onInvoiceSelected(int id)
