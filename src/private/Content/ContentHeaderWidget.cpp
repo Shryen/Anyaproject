@@ -90,6 +90,11 @@ void ContentHeaderWidget::SetupSortComboBox()
 	)");
 }
 
+void ContentHeaderWidget::UpdateProfit(const QString& profit)
+{
+	profitLabel->setText(QString("Bevétel: %1€").arg(profit));
+}
+
 QWidget* ContentHeaderWidget::CreateButtonWidget()
 {
 	QWidget* buttonWidget = new QWidget(this);
@@ -171,7 +176,7 @@ QWidget* ContentHeaderWidget::CreateProfitWidget()
 	QWidget* profitWidget = new QWidget(this);
 	profitWidget->setFixedSize(180, 180);
 
-	QLabel* profitLabel = new QLabel("Bevétel: 0 €", profitWidget);
+	profitLabel = new QLabel("Bevétel: 0 €", profitWidget);
 	profitLabel->setAlignment(Qt::AlignCenter);
 
 	QHBoxLayout* layout = new QHBoxLayout(profitWidget);
@@ -188,7 +193,7 @@ QWidget* ContentHeaderWidget::CreateProfitWidget()
 		QLabel {
 			color: white;
 			font-weight: bold;
-			font-size: 22pt;
+			font-size: 20pt;
 		}
 	)");
 

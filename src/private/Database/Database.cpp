@@ -95,6 +95,17 @@ void Database::deleteData(int id)
     sqlite3_finalize(statement);
 }
 
+QString Database::GetSumOfInvoices()
+{
+    QVector<Invoice> AllInvoices = getAllInvoices();
+    QString sumString = "";
+    double sum{ 0.0 };
+    for(const Invoice& invoice : AllInvoices){
+		sum += invoice.osszeg;
+    }
+    return QString("%1").arg(sum);
+}
+
 QString Database::getInvoiceInfo(int id)
 {
 	Invoice invoice = getInvoiceById(id);

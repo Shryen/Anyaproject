@@ -30,11 +30,15 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 	MainLayout->addWidget(contentWidget);
 
 	contentWidget->UpdateContent(database);
+	QString profitSum = database->GetSumOfInvoices();
+	contentWidget->SetProfitSum(profitSum);
 
 	connect(contentWidget, &Content::AddToDatabaseRequested, this,&MainWindow::onDataReceived);
 	connect(contentWidget, &Content::DeleteFromDatabaseRequested, this, &MainWindow::onDeleteRequested);
 	connect(contentWidget, &Content::OnListChanged, this, [this]() {
 		contentWidget->UpdateContent(database);
+		QString profitSum = database->GetSumOfInvoices();
+		contentWidget->SetProfitSum(profitSum);
 	});
 	connect(contentWidget, &Content::InvoiceSelected, this, &MainWindow::onInvoiceSelected);
 }
@@ -81,6 +85,7 @@ void MainWindow::onDeleteRequested()
 		if (selectedInvoiceId != -1) {
 			database->deleteData(selectedInvoiceId);
 			contentWidget->UpdateContent(database);
+			contentWidget->OnListChanged();
 		}
 	}
 	else if (confirmDialog->clickedButton() == NoButton) {
@@ -94,7 +99,9 @@ void MainWindow::onInvoiceSelected(int id)
 	selectedInvoiceId = id;
 }
 
+
 void MainWindow::onDataReceived(const Invoice& Data) {
 	database->insertData(Data);
 	contentWidget->UpdateContent(database);
+	contentWidget->OnListChanged();
 }

@@ -29,6 +29,8 @@ public:
 
 	void UpdateContent(Database* db);
 
+	void SetProfitSum(const QString& profit);
+
 signals:
 	void AddToDatabaseRequested(const Invoice& data);
 	void DeleteFromDatabaseRequested();

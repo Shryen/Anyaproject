@@ -1,6 +1,7 @@
 #pragma once
 #include <QWidget>
 
+class QLabel;
 class QComboBox;
 class QPushButton;
 
@@ -10,6 +11,8 @@ public:
 	explicit ContentHeaderWidget(QWidget* parent = nullptr);
 
 	void SetupSortComboBox();
+
+	void UpdateProfit(const QString& profit);
 
 signals:
 	void AddButtonClicked();
@@ -25,6 +28,8 @@ private:
 	QWidget* CreateProfitWidget();
 
 	QComboBox* SortComboBox;
+
+	QLabel* profitLabel;
 
 
 	QString ButtonStyling = R"(

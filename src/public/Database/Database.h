@@ -16,6 +16,9 @@ public:
 	void deleteData(int id);
 
 
+	QString GetSumOfInvoices();
+
+
 	QString getInvoiceInfo(int id);
 private:
 	sqlite3* db = nullptr;

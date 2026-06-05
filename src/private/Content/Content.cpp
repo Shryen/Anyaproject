@@ -170,13 +170,18 @@ void Content::paintEvent(QPaintEvent* event)
 QLabel* Content::SetupTitleLabel()
 {
 	QLabel* label = new QLabel("Számlák", contentWidget);
-	label->setAlignment(Qt::AlignCenter);
+	label->setAlignment(Qt::AlignLeft);
 	label->setStyleSheet(R"(
 	font-size: 32pt;
 	color: black;
 	font-weight: bold;
 	)");
 	return label;
+}
+
+void Content::SetProfitSum(const QString& profit)
+{
+	headerWidget->UpdateProfit(profit);
 }
 
 void Content::SetupScrollArea()
