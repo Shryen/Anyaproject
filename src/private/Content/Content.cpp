@@ -78,22 +78,44 @@ void Content::UpdateContent(Database* db) {
 	for(const Invoice& invoice : invoices){
 		InvoiceWidget* widget = new InvoiceWidget(invoice, scrollArea->widget());
 		invoiceLayout->addWidget(widget);
-		connect(widget, &InvoiceWidget::InvoiceSelected, this, [this, widget](int selectedIndex) {
-			widget->setStyleSheet(R"(
-				InvoiceWidget {
-					border: 2px solid #5fa8d3;
-					background-color: rgba(95, 168, 211, 0.1);
-				}
-				QLabel {
-					color: black;
-					font-size: 16pt;
-					border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-					padding: 8px;
-				}
-			)");
-			qDebug() << "Selected Invoice ID: " << selectedIndex;
-			emit OnListChanged();
-		});
+
+		connect(widget, &InvoiceWidget::InvoiceSelected, this, &Content::OnInvoiceSelected);
+	}
+}
+
+void Content::OnInvoiceSelected(int InvoiceId){
+	qDebug() << "Selected Invoice ID: " << InvoiceId;
+	emit InvoiceSelected(InvoiceId);
+	for (int i = 0; i < invoiceLayout->count(); ++i) {
+		InvoiceWidget* widgetAtIndex = qobject_cast<InvoiceWidget*>(invoiceLayout->itemAt(i)->widget());
+		if (!widgetAtIndex) continue;
+
+		if (widgetAtIndex->GetInvoiceId() == InvoiceId)
+			widgetAtIndex->setStyleSheet(R"(
+                InvoiceWidget {
+                    border: 2px solid #5fa8d3;
+                    background-color: rgba(95, 168, 211, 0.5);
+                }
+                QLabel {
+                    color: black;
+                    font-size: 16pt;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+                    padding: 8px;
+                }
+            )");
+		else
+			widgetAtIndex->setStyleSheet(R"(
+                QLabel {
+                    color: black;
+                    font-size: 16pt;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+                    padding: 8px;
+                }
+            )");
+
+		widgetAtIndex->style()->unpolish(widgetAtIndex);
+		widgetAtIndex->style()->polish(widgetAtIndex);
+		widgetAtIndex->update();
 	}
 }
 
@@ -140,19 +162,6 @@ void Content::paintEvent(QPaintEvent* event)
 		QStyle::PE_Widget, &o, &p, this);
 }
 
-
-void Content::TestFillupContent() {
-	for (int i = 0; i < 50; ++i) {
-		Invoice test;
-		test.id = i;
-		test.nev = QString("Név %1").arg(i);
-		test.osszeg = i * 1000;
-		test.datum = QString("2024-06-%1").arg(i % 30 + 1, 2, 10, QChar('0'));
-
-		InvoiceWidget* testwidget = new InvoiceWidget(test, scrollArea->widget());
-		invoiceLayout->addWidget(testwidget);
-	}
-}
 
 QLabel* Content::SetupTitleLabel()
 {

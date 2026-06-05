@@ -3,6 +3,8 @@
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QMouseEvent>
+#include <QStyleOption>
+#include <QPainter>
 
 InvoiceWidget::InvoiceWidget(const Invoice& invoice, QWidget* parent)
 	: QWidget(parent)
@@ -22,10 +24,6 @@ InvoiceWidget::InvoiceWidget(const Invoice& invoice, QWidget* parent)
 	layout->addWidget(dateLabel);
 
 	setStyleSheet(R"(
-		InvoiceWidget {
-			border: 1px solid rgba(0, 0, 0, 0.3);
-		}
-
 		QLabel {
 			color: black;
 			font-size: 16pt;
@@ -39,4 +37,11 @@ void InvoiceWidget::mousePressEvent(QMouseEvent* event)
 {
 	if(event->button() == Qt::LeftButton)
 		emit InvoiceSelected(idLabel->text().toInt());
+}
+
+void InvoiceWidget::paintEvent(QPaintEvent* event) {
+	QStyleOption o;
+	o.initFrom(this);
+	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
 }

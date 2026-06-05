@@ -32,6 +32,11 @@ public:
 signals:
 	void AddToDatabaseRequested(const Invoice& data);
 	void OnListChanged();
+	void InvoiceSelected(int invoiceId);
+
+
+private slots:
+	void OnInvoiceSelected(int invoiceId);
 
 private:
 	QVBoxLayout* m_layout = nullptr;

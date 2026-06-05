@@ -33,6 +33,12 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 	connect(contentWidget, &Content::OnListChanged, this, [this]() {
 		contentWidget->UpdateContent(database);
 	});
+	connect(contentWidget, &Content::InvoiceSelected, this, &MainWindow::onInvoiceSelected);
+}
+
+void MainWindow::onInvoiceSelected(int id)
+{
+	
 }
 
 void MainWindow::onDataReceived(const Invoice& Data) {

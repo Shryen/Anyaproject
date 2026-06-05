@@ -14,6 +14,7 @@ public:
 
 private slots:
 	void onDataReceived(const Invoice& Data); 
+	void onInvoiceSelected(int id);
 
 private:
 	// Buttons
