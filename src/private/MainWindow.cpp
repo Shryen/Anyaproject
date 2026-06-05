@@ -30,16 +30,24 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 	contentWidget->UpdateContent(database);
 
 	connect(contentWidget, &Content::AddToDatabaseRequested, this,&MainWindow::onDataReceived);
+	connect(contentWidget, &Content::DeleteFromDatabaseRequested, this, &MainWindow::onDeleteRequested);
 	connect(contentWidget, &Content::OnListChanged, this, [this]() {
 		contentWidget->UpdateContent(database);
 	});
 	connect(contentWidget, &Content::InvoiceSelected, this, &MainWindow::onInvoiceSelected);
 }
 
+void MainWindow::onDeleteRequested()
+{
+	if(selectedInvoiceId != -1){
+		database->deleteData(selectedInvoiceId);
+		contentWidget->UpdateContent(database);
+	}
+}
+
 void MainWindow::onInvoiceSelected(int id)
 {
-	database->deleteData(id);
-	contentWidget->UpdateContent(database);
+	selectedInvoiceId = id;
 }
 
 void MainWindow::onDataReceived(const Invoice& Data) {

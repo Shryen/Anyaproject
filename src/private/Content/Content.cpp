@@ -35,6 +35,11 @@ void Content::BindDependencies()
 		stackedWidget->setCurrentWidget(addContentWidget);
 	});
 
+	connect(headerWidget, &ContentHeaderWidget::DeleteButtonClicked,
+		this, [this]() {
+		emit DeleteFromDatabaseRequested();
+	});
+
 	connect(headerWidget, &ContentHeaderWidget::SortChanged, this, [this](int sortOption) {
 		currentSort = static_cast<SortType>(sortOption);
 		emit OnListChanged();
@@ -84,7 +89,6 @@ void Content::UpdateContent(Database* db) {
 }
 
 void Content::OnInvoiceSelected(int InvoiceId){
-	qDebug() << "Selected Invoice ID: " << InvoiceId;
 	emit InvoiceSelected(InvoiceId);
 	for (int i = 0; i < invoiceLayout->count(); ++i) {
 		InvoiceWidget* widgetAtIndex = qobject_cast<InvoiceWidget*>(invoiceLayout->itemAt(i)->widget());

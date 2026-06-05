@@ -31,6 +31,7 @@ public:
 
 signals:
 	void AddToDatabaseRequested(const Invoice& data);
+	void DeleteFromDatabaseRequested();
 	void OnListChanged();
 	void InvoiceSelected(int invoiceId);
 

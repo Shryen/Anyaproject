@@ -16,7 +16,7 @@ ContentHeaderWidget::ContentHeaderWidget(QWidget* parent)
 	layout->setSpacing(0);
 
 	layout->addWidget(CreateProfitWidget(), 0, Qt::AlignHCenter);
-	layout->addWidget(CreateAddButtonWidget());
+	layout->addWidget(CreateButtonWidget());
 	layout->addWidget(CreateHeaderWidget());
 }
 
@@ -89,50 +89,44 @@ void ContentHeaderWidget::SetupSortComboBox()
 	)");
 }
 
-QWidget* ContentHeaderWidget::CreateAddButtonWidget()
+QWidget* ContentHeaderWidget::CreateButtonWidget()
 {
 	QWidget* buttonWidget = new QWidget(this);
 	QHBoxLayout* buttonLayout = new QHBoxLayout(buttonWidget);
 	buttonLayout->setContentsMargins(0, 10, 0, 10);
 	buttonLayout->setAlignment(Qt::AlignRight);
 
-	QPushButton* addButton = new QPushButton("+", buttonWidget);
-	addButton->setObjectName("addButton");
-	addButton->setFixedSize(QSize{ 50,50 });
-
-	addButton->setCursor(Qt::PointingHandCursor);
-	connect(addButton, &QPushButton::clicked, this, &ContentHeaderWidget::AddButtonClicked);
+	QPushButton* addButton = CreateAddButton(buttonWidget);
+	QPushButton* deleteButton = CreateDeleteButton(buttonWidget);
 
 	buttonLayout->addStretch();
 	buttonLayout->addWidget(SortComboBox);
 	buttonLayout->addWidget(addButton);
-
-
-	addButton->setStyleSheet(R"(
-		QPushButton#addButton {
-			font-size: 22pt;
-			font-weight: bold;
-			color: #f0ead6;
-			background-color: #5fa8d3;
-			border-radius: 8px;
-			border: 2px solid #4f98c3;
-			padding: 0px;
-			text-align: center;
-		}
-
-		QPushButton#addButton:hover {
-			background-color: #4f98c3;
-			border-color: #3f88b3;
-		}
-
-		QPushButton#addButton:pressed {
-			background-color: #3f88b3;
-			border-color: #2f789f;
-		}
-	)");
-
+	buttonLayout->addWidget(deleteButton);
 
 	return buttonWidget;
+}
+
+QPushButton* ContentHeaderWidget::CreateAddButton(QWidget* buttonWidget)
+{
+	QPushButton* addButton = new QPushButton("+", buttonWidget);
+	addButton->setStyleSheet(ButtonStyling);
+	addButton->setFixedSize(QSize{ 50,50 });
+	addButton->setCursor(Qt::PointingHandCursor);
+
+	connect(addButton, &QPushButton::clicked, this, &ContentHeaderWidget::AddButtonClicked);
+
+	return addButton;
+}
+
+QPushButton* ContentHeaderWidget::CreateDeleteButton(QWidget* parent)
+{
+	QPushButton* deleteButton = new QPushButton("x", parent);
+	deleteButton->setStyleSheet(ButtonStyling);
+	deleteButton->setFixedSize(QSize{ 50,50 });
+	deleteButton->setCursor(Qt::PointingHandCursor);
+	connect(deleteButton, &QPushButton::clicked, this, &ContentHeaderWidget::DeleteButtonClicked);
+	return deleteButton;
 }
 
 QWidget* ContentHeaderWidget::CreateHeaderWidget()
