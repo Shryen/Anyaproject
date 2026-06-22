@@ -22,7 +22,8 @@ set(SOURCES
  "src/private/Content/Content.cpp" 
  "src/private/Content/ContentHeaderWidget.cpp" 
  "src/private/Invoice/InvoiceWidget.cpp" 
- "src/private/Content/AddContentWidget.cpp")
+ "src/private/Content/AddContentWidget.cpp"
+ "src/private/Content/EditContentWidget.cpp")
 
 set(HEADERS
     src/public/MainWindow.h
@@ -34,7 +35,8 @@ set(HEADERS
  "src/public/Content/ContentHeaderWidget.h" 
  "src/public/Invoice/InvoiceWidget.h" 
  "src/public/Invoice.h" 
- "src/public/Content/AddContentWidget.h")
+ "src/public/Content/AddContentWidget.h"
+ "src/public/Content/EditContentWidget.h")
 
 add_executable(CMakeTesting ${SOURCES} ${HEADERS})
 

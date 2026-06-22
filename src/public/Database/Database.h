@@ -13,6 +13,7 @@ public:
 	Invoice getInvoiceById(int id);
 
 	void insertData(const Invoice& Data);
+	void updateData(const Invoice& Data);
 	void deleteData(int id);
 
 

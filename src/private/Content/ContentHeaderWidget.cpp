@@ -108,6 +108,7 @@ QWidget* ContentHeaderWidget::CreateToolBarWidget()
 	buttonLayout->setContentsMargins(0, 10, 0, 10);
 
 	QPushButton* addButton = CreateAddButton(buttonWidget);
+	QPushButton* editButton = CreateEditButton(buttonWidget);
 	QPushButton* deleteButton = CreateDeleteButton(buttonWidget);
 
 	buttonLayout->addWidget(CreateSearchLineEdit(buttonWidget));
@@ -116,6 +117,7 @@ QWidget* ContentHeaderWidget::CreateToolBarWidget()
 	buttonLayout->addStretch();
 	buttonLayout->addWidget(SortComboBox);
 	buttonLayout->addWidget(addButton);
+	buttonLayout->addWidget(editButton);
 	buttonLayout->addWidget(deleteButton);
 
 	return buttonWidget;
@@ -131,6 +133,17 @@ QPushButton* ContentHeaderWidget::CreateAddButton(QWidget* buttonWidget)
 	connect(addButton, &QPushButton::clicked, this, &ContentHeaderWidget::AddButtonClicked);
 
 	return addButton;
+}
+
+QPushButton* ContentHeaderWidget::CreateEditButton(QWidget* parent)
+{
+	QPushButton* editButton = new QPushButton("/", parent);
+	editButton->setStyleSheet(ButtonStyling);
+	editButton->setFixedSize(QSize{ 50,50 });
+	editButton->setCursor(Qt::PointingHandCursor);
+	connect(editButton, &QPushButton::clicked, this, &ContentHeaderWidget::EditButtonClicked);
+
+	return editButton;
 }
 
 QPushButton* ContentHeaderWidget::CreateDeleteButton(QWidget* parent)

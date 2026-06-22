@@ -35,6 +35,7 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 
 	connect(contentWidget, &Content::AddToDatabaseRequested, this,&MainWindow::onDataReceived);
 	connect(contentWidget, &Content::DeleteFromDatabaseRequested, this, &MainWindow::onDeleteRequested);
+	connect(contentWidget, &Content::EditFromDatabaseRequested, this, &MainWindow::onEditRequested);
 	connect(contentWidget, &Content::OnListChanged, this, [this]() {
 		contentWidget->UpdateContent(database);
 		QString profitSum = database->GetSumOfInvoices();
@@ -92,6 +93,13 @@ void MainWindow::onDeleteRequested()
 		
 	}
 	
+}
+
+void MainWindow::onEditRequested(const Invoice& Data)
+{
+	database->updateData(Data);
+	contentWidget->UpdateContent(database);
+	contentWidget->OnListChanged();
 }
 
 void MainWindow::onInvoiceSelected(int id)

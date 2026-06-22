@@ -1,4 +1,5 @@
 #pragma once
+#include <QDate>
 #include <QWidget>
 #include "Invoice.h"
 
@@ -9,8 +10,8 @@ class Database;
 class QScrollArea;
 class QPaintEvent;
 class AddContentWidget;
+class EditContentWidget;
 class ContentHeaderWidget;
-class QDate;
 
 enum class SortType {
 	ById,
@@ -35,6 +36,7 @@ public:
 signals:
 	void AddToDatabaseRequested(const Invoice& data);
 	void DeleteFromDatabaseRequested();
+	void EditFromDatabaseRequested(const Invoice& data);
 	void OnListChanged();
 	void InvoiceSelected(int invoiceId);
 
@@ -52,6 +54,7 @@ private:
 	QScrollArea* scrollArea = nullptr;
 	QStackedWidget* stackedWidget = nullptr;
 	AddContentWidget* addContentWidget = nullptr;
+	EditContentWidget* editContentWidget = nullptr;
 	ContentHeaderWidget* headerWidget = nullptr;
 
 
@@ -61,7 +64,10 @@ private:
 	void SetupContentWidget();
 
 	// Searching and filtering
+	int selectedInvoiceId = -1;
 	SortType currentSort = SortType::ById;
 	QVector<Invoice> invoiceCache;
 	QString currentSearchFilter;
+	int currentMonth{ QDate::currentDate().month() };
+	int currentYear{ QDate::currentDate().year() };
 };

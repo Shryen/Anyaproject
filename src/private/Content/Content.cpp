@@ -9,15 +9,16 @@
 #include "Invoice/InvoiceWidget.h"
 #include <QStackedWidget>
 #include "Content/AddContentWidget.h"
+#include "Content/EditContentWidget.h"
 #include <QDate>
 
 
 Content::Content(QWidget* parent) : QWidget(parent)
 {
 	addContentWidget = new AddContentWidget(stackedWidget);
+	editContentWidget = new EditContentWidget(stackedWidget);
 	SetupWidget();
 	BindDependencies();
-	OnMonthChanged(QDate::currentDate().month(), QDate::currentDate().year());
 }
 
 void Content::BindDependencies()
@@ -35,6 +36,27 @@ void Content::BindDependencies()
 	connect(headerWidget, &ContentHeaderWidget::AddButtonClicked,
 		this, [this]() {
 		stackedWidget->setCurrentWidget(addContentWidget);
+	});
+
+	connect(editContentWidget, &EditContentWidget::BackRequested,
+		this, [this]() {
+		stackedWidget->setCurrentWidget(contentWidget);
+	});
+
+	connect(editContentWidget, &EditContentWidget::EditRequested, this, [this](const Invoice& Data) {
+		emit EditFromDatabaseRequested(Data);
+		stackedWidget->setCurrentWidget(contentWidget);
+	});
+
+	connect(headerWidget, &ContentHeaderWidget::EditButtonClicked,
+		this, [this]() {
+		for (const Invoice& inv : invoiceCache) {
+			if (inv.id == selectedInvoiceId) {
+				editContentWidget->LoadInvoice(inv);
+				stackedWidget->setCurrentWidget(editContentWidget);
+				break;
+			}
+		}
 	});
 
 	connect(headerWidget, &ContentHeaderWidget::DeleteButtonClicked,
@@ -94,6 +116,7 @@ void Content::UpdateContent(Database* db) {
 	}
 
 	OnSearchChanged(currentSearchFilter);
+	OnMonthChanged(currentMonth, currentYear);
 }
 
 void Content::OnSearchChanged(const QString& filter)
@@ -116,7 +139,8 @@ void Content::OnSearchChanged(const QString& filter)
 
 void Content::OnMonthChanged(int month, int year)
 {
-	QString monthStr = QString("%1-%2").arg(year).arg(month, 2, 10, QChar('0'));
+	currentMonth = month;
+	currentYear = year;
 	for (int i = 0; i < invoiceLayout->count(); ++i) {
 		InvoiceWidget* widgetAtIndex = qobject_cast<InvoiceWidget*>(invoiceLayout->itemAt(i)->widget());
 		if (!widgetAtIndex) continue;
@@ -127,6 +151,7 @@ void Content::OnMonthChanged(int month, int year)
 }
 
 void Content::OnInvoiceSelected(int InvoiceId){
+	selectedInvoiceId = InvoiceId;
 	emit InvoiceSelected(InvoiceId);
 	for (int i = 0; i < invoiceLayout->count(); ++i) {
 		InvoiceWidget* widgetAtIndex = qobject_cast<InvoiceWidget*>(invoiceLayout->itemAt(i)->widget());
@@ -177,6 +202,7 @@ void Content::SetupWidget()
 
 	stackedWidget->addWidget(contentWidget);
 	stackedWidget->addWidget(addContentWidget);
+	stackedWidget->addWidget(editContentWidget);
 
 	m_layout->addWidget(stackedWidget);
 

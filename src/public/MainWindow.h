@@ -15,6 +15,7 @@ public:
 private slots:
 	void onDataReceived(const Invoice& Data); 
 	void onDeleteRequested();
+	void onEditRequested(const Invoice& Data);
 	void onInvoiceSelected(int id);
 
 private:

@@ -72,6 +72,32 @@ void Database::insertData(const Invoice& Data) {
     sqlite3_finalize(statement);
 }
 
+void Database::updateData(const Invoice& Data)
+{
+	if (!db) {
+		qDebug() << "Adatbázis nem elérhető: " << sqlite3_errmsg(db);
+		return;
+	}
+
+	const char* sqlStmt = "UPDATE szamlak SET nev = ?, osszeg = ?, datum = ? WHERE id = ?";
+	sqlite3_stmt* statement = nullptr;
+
+	if (sqlite3_prepare_v2(db, sqlStmt, -1, &statement, nullptr) == SQLITE_OK) {
+		sqlite3_bind_text(statement, 1, Data.nev.toStdString().c_str(), -1, SQLITE_TRANSIENT);
+		sqlite3_bind_double(statement, 2, Data.osszeg);
+		sqlite3_bind_text(statement, 3, Data.datum.toStdString().c_str(), -1, SQLITE_TRANSIENT);
+		sqlite3_bind_int(statement, 4, Data.id);
+
+		if (sqlite3_step(statement) == SQLITE_DONE)
+			qDebug() << "Adat frissítve";
+		else
+			qDebug() << "Nem sikerült frissíteni az adatot: " << sqlite3_errmsg(db);
+	} else
+		qDebug() << "Prepare failed: " << sqlite3_errmsg(db);
+
+	sqlite3_finalize(statement);
+}
+
 void Database::deleteData(int id)
 {
     if (!db) {

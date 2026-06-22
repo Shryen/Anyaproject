@@ -18,6 +18,7 @@ public:
 
 signals:
 	void AddButtonClicked();
+	void EditButtonClicked();
 	void DeleteButtonClicked();
 	void SortChanged(int sortOption);
 	void SearchChanged(const QString& filter);
@@ -26,6 +27,7 @@ signals:
 private:
 	QWidget* CreateToolBarWidget();
 	QPushButton* CreateAddButton(QWidget* parent = nullptr);
+	QPushButton* CreateEditButton(QWidget* parent = nullptr);
 	QPushButton* CreateDeleteButton(QWidget* parent = nullptr);
 
 	QWidget* CreateHeaderWidget();
