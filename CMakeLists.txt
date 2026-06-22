@@ -15,10 +15,7 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 set(SOURCES
     main.cpp
     src/private/MainWindow.cpp
-    src/private/Buttons/MainButton.cpp
-    src/private/Buttons/AddButton.cpp
     src/private/Database/Database.cpp
-    src/private/Sidebar/Sidebar.cpp
  "src/private/Content/Content.cpp" 
  "src/private/Content/ContentHeaderWidget.cpp" 
  "src/private/Invoice/InvoiceWidget.cpp" 
@@ -27,10 +24,7 @@ set(SOURCES
 
 set(HEADERS
     src/public/MainWindow.h
-    src/public/Buttons/MainButton.h
-    src/public/Buttons/AddButton.h
     src/public/Database/Database.h
-    src/public/Sidebar/Sidebar.h
  "src/public/Content/Content.h" 
  "src/public/Content/ContentHeaderWidget.h" 
  "src/public/Invoice/InvoiceWidget.h" 

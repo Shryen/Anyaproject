@@ -1,6 +1,8 @@
 #include "Database/Database.h"
 #include <QDebug>
 #include <QString>
+#include <QDate>
+#include <QRandomGenerator>
 
 Database::Database() {
     SetupDatabase();
@@ -119,6 +121,55 @@ void Database::deleteData(int id)
 		qDebug() << "Prepare failed: " << sqlite3_errmsg(db);
 
     sqlite3_finalize(statement);
+}
+
+void Database::deleteAllData()
+{
+	const char* deleteAll = "DELETE FROM szamlak";
+	char* errMsg = nullptr;
+	sqlite3_exec(db, deleteAll, nullptr, nullptr, &errMsg);
+}
+
+void Database::GenerateMockData()
+{
+	const char* deleteAll = "DELETE FROM szamlak";
+	char* errMsg = nullptr;
+	sqlite3_exec(db, deleteAll, nullptr, nullptr, &errMsg);
+
+	const char* resetId = "DELETE FROM sqlite_sequence WHERE name='szamlak'";
+	sqlite3_exec(db, resetId, nullptr, nullptr, nullptr);
+
+	QStringList names = {
+		"Kovács Béla", "Nagy Anna", "Tóth Péter", "Szabó Eszter",
+		"Horváth Gábor", "Varga Mária", "Kiss László", "Molnár Zsófia",
+		"Nemeth Dániel", "Farkas Viktória", "Balogh Tamás", "Papp Judit",
+		"Lakatos István", "Mészáros Andrea", "Simon Róbert", "Oláh Katalin",
+		"Takács József", "Fazekas Gabriella", "Sándor Attila", "Bíró Dóra",
+		"Gál Zoltán", "Fehér Ildikó", "Pintér Csaba", "Kovács Erika",
+		"Fülöp Gergő", "Szűcs Nikolett", "Vincze Ádám", "Hegedűs Tímea",
+		"Bodnár Tibor", "Bogdán Petra"
+	};
+
+	int currentYear = QDate::currentDate().year();
+
+	for (int month = 1; month <= 12; ++month) {
+		int daysInMonth = QDate(currentYear, month, 1).daysInMonth();
+
+		for (int i = 0; i < 25; ++i) {
+			int day = QRandomGenerator::global()->bounded(1, daysInMonth + 1);
+			QDate date(currentYear, month, day);
+
+			QString name = names[QRandomGenerator::global()->bounded(names.size())];
+			double amount = QRandomGenerator::global()->bounded(500, 100000) / 100.0;
+
+			Invoice invoice;
+			invoice.nev = name;
+			invoice.osszeg = amount;
+			invoice.datum = date.toString("yyyy-MM-dd");
+
+			insertData(invoice);
+		}
+	}
 }
 
 QString Database::GetSumOfInvoices()

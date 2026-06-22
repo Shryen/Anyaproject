@@ -5,6 +5,7 @@
 
 class QLabel;
 class QStackedWidget;
+class QTimer;
 class QVBoxLayout;
 class Database;
 class QScrollArea;
@@ -53,6 +54,7 @@ private:
 	QWidget* contentWidget = nullptr;
 	QScrollArea* scrollArea = nullptr;
 	QStackedWidget* stackedWidget = nullptr;
+	QTimer* searchTimer = nullptr;
 	AddContentWidget* addContentWidget = nullptr;
 	EditContentWidget* editContentWidget = nullptr;
 	ContentHeaderWidget* headerWidget = nullptr;
@@ -65,6 +67,7 @@ private:
 
 	// Searching and filtering
 	int selectedInvoiceId = -1;
+	int previousSelectedId = -1;
 	SortType currentSort = SortType::ById;
 	QVector<Invoice> invoiceCache;
 	QString currentSearchFilter;

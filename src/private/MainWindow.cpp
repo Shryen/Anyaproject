@@ -1,11 +1,9 @@
 #include <QHBoxLayout>
+#include <QPushButton>
 #include <QMessageBox>
 #include "MainWindow.h"
-#include "Buttons/AddButton.h"
 #include "Database/Database.h"
 #include "Content/Content.h"
-#include "Sidebar/Sidebar.h"
-
 
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 	// Start Database
@@ -13,7 +11,7 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 
 	// Setup Window
 	setWindowTitle("Számlák");
-	setFixedSize(QSize{ 1280,720 });
+	setFixedSize(QSize{ 1280,900 });
 	setStyleSheet(R"(
 		background-color: #fff5ee;
 	)");
@@ -23,11 +21,12 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent) {
 	MainLayout->setContentsMargins(0, 0, 0, 0);
 	MainLayout->setSpacing(0);
 
-	sideBar = new Sidebar(this);
 	contentWidget = new Content(this);
 
-	MainLayout->addWidget(sideBar);
 	MainLayout->addWidget(contentWidget);
+
+	//database->GenerateMockData();
+	//database->deleteAllData();
 
 	contentWidget->UpdateContent(database);
 	QString profitSum = database->GetSumOfInvoices();

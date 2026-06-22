@@ -11,12 +11,21 @@
 #include "Content/AddContentWidget.h"
 #include "Content/EditContentWidget.h"
 #include <QDate>
+#include <QTimer>
 
 
 Content::Content(QWidget* parent) : QWidget(parent)
 {
 	addContentWidget = new AddContentWidget(stackedWidget);
 	editContentWidget = new EditContentWidget(stackedWidget);
+
+	searchTimer = new QTimer(this);
+	searchTimer->setSingleShot(true);
+	searchTimer->setInterval(150);
+	connect(searchTimer, &QTimer::timeout, this, [this]() {
+		OnSearchChanged(currentSearchFilter);
+	});
+
 	SetupWidget();
 	BindDependencies();
 }
@@ -69,7 +78,10 @@ void Content::BindDependencies()
 		emit OnListChanged();
 	});
 
-	connect(headerWidget, &ContentHeaderWidget::SearchChanged, this, &Content::OnSearchChanged);
+	connect(headerWidget, &ContentHeaderWidget::SearchChanged, this, [this](const QString& filter) {
+		currentSearchFilter = filter;
+		searchTimer->start();
+	});
 
 	connect(headerWidget, &ContentHeaderWidget::MonthChanged, this, &Content::OnMonthChanged);
 }
@@ -115,75 +127,97 @@ void Content::UpdateContent(Database* db) {
 		connect(widget, &InvoiceWidget::InvoiceSelected, this, &Content::OnInvoiceSelected);
 	}
 
+	previousSelectedId = -1;
 	OnSearchChanged(currentSearchFilter);
 	OnMonthChanged(currentMonth, currentYear);
 }
 
 void Content::OnSearchChanged(const QString& filter)
 {
+	QWidget* container = scrollArea->widget();
+	container->setUpdatesEnabled(false);
+
 	for (int i = 0; i < invoiceLayout->count(); ++i) {
 		InvoiceWidget* widgetAtIndex = qobject_cast<InvoiceWidget*>(invoiceLayout->itemAt(i)->widget());
 		if (!widgetAtIndex) continue;
 
-		if (filter.isEmpty()) {
-			widgetAtIndex->setVisible(true);
-		} else {
-			const Invoice& inv = invoiceCache[i];
-			bool matches = inv.nev.contains(filter, Qt::CaseInsensitive);
-			widgetAtIndex->setVisible(matches);
-		}
+		bool monthMatch = widgetAtIndex->GetInvoiceYear() == currentYear
+			&& widgetAtIndex->GetInvoiceMonth() == currentMonth;
+		bool searchMatch = filter.isEmpty() || invoiceCache[i].nev.contains(filter, Qt::CaseInsensitive);
+
+		widgetAtIndex->setVisible(monthMatch && searchMatch);
 	}
 
-	currentSearchFilter = filter;
+	container->setUpdatesEnabled(true);
 }
 
 void Content::OnMonthChanged(int month, int year)
 {
 	currentMonth = month;
 	currentYear = year;
+
+	QWidget* container = scrollArea->widget();
+	container->setUpdatesEnabled(false);
+
 	for (int i = 0; i < invoiceLayout->count(); ++i) {
 		InvoiceWidget* widgetAtIndex = qobject_cast<InvoiceWidget*>(invoiceLayout->itemAt(i)->widget());
 		if (!widgetAtIndex) continue;
 
-		bool match = widgetAtIndex->GetInvoiceYear() == year && widgetAtIndex->GetInvoiceMonth() == month;
-		widgetAtIndex->setVisible(match);
+		bool monthMatch = widgetAtIndex->GetInvoiceYear() == year
+			&& widgetAtIndex->GetInvoiceMonth() == month;
+		bool searchMatch = currentSearchFilter.isEmpty()
+			|| invoiceCache[i].nev.contains(currentSearchFilter, Qt::CaseInsensitive);
+
+		widgetAtIndex->setVisible(monthMatch && searchMatch);
 	}
+
+	container->setUpdatesEnabled(true);
 }
 
 void Content::OnInvoiceSelected(int InvoiceId){
 	selectedInvoiceId = InvoiceId;
 	emit InvoiceSelected(InvoiceId);
+
+	QWidget* container = scrollArea->widget();
+	container->setUpdatesEnabled(false);
+
+	QString selectedStyle = R"(
+		InvoiceWidget {
+			border: 2px solid #1B365D;
+			background-color: rgba(27, 54, 93, 0.08);
+		}
+		QLabel {
+			color: #1B365D;
+			font-size: 16pt;
+			font-weight: bold;
+			border-bottom: 1px solid rgba(27, 54, 93, 0.15);
+			padding: 8px;
+		}
+	)";
+
+	QString unselectedStyle = R"(
+		QLabel {
+			color: #4A5568;
+			font-size: 16pt;
+			border-bottom: 1px solid rgba(74, 85, 104, 0.15);
+			padding: 8px;
+		}
+	)";
+
 	for (int i = 0; i < invoiceLayout->count(); ++i) {
-		InvoiceWidget* widgetAtIndex = qobject_cast<InvoiceWidget*>(invoiceLayout->itemAt(i)->widget());
-		if (!widgetAtIndex) continue;
-
-		if (widgetAtIndex->GetInvoiceId() == InvoiceId)
-			widgetAtIndex->setStyleSheet(R"(
-                InvoiceWidget {
-                    border: 2px solid #5fa8d3;
-                    background-color: rgba(95, 168, 211, 0.5);
-                }
-                QLabel {
-                    color: black;
-                    font-size: 16pt;
-                    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-                    padding: 8px;
-                }
-            )");
-		else
-			widgetAtIndex->setStyleSheet(R"(
-                QLabel {
-                    color: black;
-                    font-size: 16pt;
-                    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-                    padding: 8px;
-                }
-            )");
-
-		widgetAtIndex->style()->unpolish(widgetAtIndex);
-		widgetAtIndex->style()->polish(widgetAtIndex);
-		widgetAtIndex->update();
+		InvoiceWidget* w = qobject_cast<InvoiceWidget*>(invoiceLayout->itemAt(i)->widget());
+		if (!w) continue;
+		int wid = w->GetInvoiceId();
+		if (wid == InvoiceId || wid == previousSelectedId) {
+			w->setStyleSheet(wid == InvoiceId ? selectedStyle : unselectedStyle);
+			w->style()->unpolish(w);
+			w->style()->polish(w);
+			w->update();
+		}
 	}
+
+	previousSelectedId = InvoiceId;
+	container->setUpdatesEnabled(true);
 }
 
 void Content::SetupWidget()
@@ -237,7 +271,7 @@ QLabel* Content::SetupTitleLabel()
 	label->setAlignment(Qt::AlignLeft);
 	label->setStyleSheet(R"(
 	font-size: 32pt;
-	color: black;
+	color: #1B365D;
 	font-weight: bold;
 	)");
 	return label;
@@ -265,20 +299,19 @@ void Content::SetupScrollArea()
 		}
 
 		QScrollBar:vertical {
-			background-color: rgba(0, 0, 0, 0.05);
-			width: 12px;
-			margin-left: 2px;
-			border: none,
+			background-color: rgba(74, 85, 104, 0.08);
+			width: 10px;
+			border: none;
 		}
 
 		QScrollBar::handle:vertical {
-			background-color: #5fa8d3;
+			background-color: #1B365D;
 			min-height: 32px;
-			border-radius: 6px;
+			border-radius: 5px;
 		}
 
 		QScrollBar::handle:vertical:hover {
-			background-color: #4f98c3;
+			background-color: #2C5282;
 		}
 
 		QScrollBar::add-line:vertical,

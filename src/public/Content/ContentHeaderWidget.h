@@ -47,26 +47,39 @@ private:
 
 	QLabel* profitLabel;
 
-
-	QString ButtonStyling = R"(
+	QString NavyButtonStyle = R"(
 		QPushButton {
 			font-size: 22pt;
 			font-weight: bold;
-			color: #f0ead6;
-			background-color: #5fa8d3;
+			color: white;
+			background-color: #1B365D;
 			border-radius: 8px;
-			border: 2px solid #4f98c3;
+			border: none;
 			padding: 0px;
 			text-align: center;
 		}
-
 		QPushButton:hover {
-			background-color: #4f98c3;
-			border-color: #3f88b3;
+			background-color: #2C5282;
 		}
-
 		QPushButton:pressed {
-			background-color: #3f88b3;
-			border-color: #2f789f;
+			background-color: #14294A;
+		})";
+
+	QString GreenButtonStyle = R"(
+		QPushButton {
+			font-size: 22pt;
+			font-weight: bold;
+			color: white;
+			background-color: #059669;
+			border-radius: 8px;
+			border: none;
+			padding: 0px;
+			text-align: center;
+		}
+		QPushButton:hover {
+			background-color: #047857;
+		}
+		QPushButton:pressed {
+			background-color: #065F46;
 		})";
 };

@@ -17,10 +17,18 @@ public:
 	void deleteData(int id);
 
 
+
 	QString GetSumOfInvoices();
 
 
 	QString getInvoiceInfo(int id);
+
+
+	//ONLY TESTING PURPOSES
+	void GenerateMockData();
+	void deleteAllData();
+
+
 private:
 	sqlite3* db = nullptr;
 	int ConnectionResult{ 0 };

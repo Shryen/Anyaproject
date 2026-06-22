@@ -1,210 +1,161 @@
 #include "Content/AddContentWidget.h"
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
-#include <QDate>
-#include <QDateEdit>
-#include <QCalendarWidget>
 #include <QPushButton>
+#include <QDateEdit>
+#include <QVBoxLayout>
+#include <QGraphicsDropShadowEffect>
 
-AddContentWidget::AddContentWidget(QWidget* parent) : QWidget(parent)
+AddContentWidget::AddContentWidget(QWidget* parent)
+	: QWidget(parent)
 {
-	QWidget* header = CreateHeaderWidget();
-	QWidget* form = CreateFormWidget();
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setAlignment(Qt::AlignCenter);
 
-	QVBoxLayout* mainLayout = SetupMainLayout();
-	mainLayout->addWidget(header, 1);
-	mainLayout->addWidget(form, 4);
-}
-
-QVBoxLayout* AddContentWidget::SetupMainLayout()
-{
-	QVBoxLayout* mainLayout = new QVBoxLayout(this);
-	mainLayout->setContentsMargins(20, 20, 20, 20);
-	mainLayout->setSpacing(20);
-	return mainLayout;
-}
-
-QHBoxLayout* AddContentWidget::SetupHeaderLayout()
-{
-	QHBoxLayout* headerLayout = new QHBoxLayout();
-	headerLayout->setContentsMargins(0, 0, 0, 0);
-	headerLayout->setSpacing(10);
-	return headerLayout;
-}
-
-QVBoxLayout* AddContentWidget::SetupFormLayout()
-{
-	QVBoxLayout* formLayout = new QVBoxLayout();
-	formLayout->setContentsMargins(16, 16, 16, 16);
-	formLayout->setSpacing(12);
-	return formLayout;
-}
-
-QWidget* AddContentWidget::CreateHeaderWidget()
-{
-	QWidget* headerWidget = new QWidget(this);
-	titleLabel = new QLabel("Számla létrehozása", headerWidget);
-	backButton = new QPushButton("Vissza", headerWidget);
-	backButton->setCursor(Qt::PointingHandCursor);
-	backButton->setFixedHeight(42);
-
-	titleLabel->setAlignment(Qt::AlignCenter);
-	titleLabel->setStyleSheet(R"(
-		font-size: 28pt;
-		color: black;
-		font-weight: bold;
+	QWidget* formWidget = new QWidget(this);
+	formWidget->setFixedSize(500, 380);
+	formWidget->setStyleSheet(R"(
+		QWidget {
+			background-color: white;
+			border: 2px solid #1B365D;
+			border-radius: 12px;
+		}
 	)");
 
+	QGraphicsDropShadowEffect* shadow = new QGraphicsDropShadowEffect(formWidget);
+	shadow->setBlurRadius(30);
+	shadow->setColor(QColor(0, 0, 0, 40));
+	shadow->setOffset(0, 4);
+	formWidget->setGraphicsEffect(shadow);
+
+	QVBoxLayout* formLayout = new QVBoxLayout(formWidget);
+	formLayout->setSpacing(15);
+	formLayout->setContentsMargins(30, 30, 30, 30);
+
+	titleLabel = new QLabel("Új számla hozzáadása", formWidget);
+	titleLabel->setAlignment(Qt::AlignCenter);
+	titleLabel->setStyleSheet(R"(
+		QLabel {
+			color: #1B365D;
+			font-size: 22pt;
+			font-weight: bold;
+			background: transparent;
+			border: none;
+		}
+	)");
+
+	nameEdit = new QLineEdit(formWidget);
+	nameEdit->setPlaceholderText("Név");
+	nameEdit->setStyleSheet(R"(
+		QLineEdit {
+			font-size: 14pt;
+			color: #4A5568;
+			background-color: #F7FAFC;
+			border: 2px solid #1B365D;
+			border-radius: 6px;
+			padding: 10px;
+		}
+		QLineEdit:focus {
+			border-color: #059669;
+		}
+	)");
+
+	amountEdit = new QLineEdit(formWidget);
+	amountEdit->setPlaceholderText("Összeg");
+	amountEdit->setStyleSheet(nameEdit->styleSheet());
+
+	dateEdit = new QDateEdit(QDate::currentDate(), formWidget);
+	dateEdit->setDisplayFormat("yyyy-MM-dd");
+	dateEdit->setStyleSheet(R"(
+		QDateEdit {
+			font-size: 14pt;
+			color: #4A5568;
+			background-color: #F7FAFC;
+			border: 2px solid #1B365D;
+			border-radius: 6px;
+			padding: 10px;
+		}
+		QDateEdit:focus {
+			border-color: #059669;
+		}
+		QDateEdit::drop-down {
+			subcontrol-origin: padding;
+			subcontrol-position: top right;
+			width: 30px;
+			border-left: 1px solid #1B365D;
+			background-color: #1B365D;
+			border-top-right-radius: 4px;
+			border-bottom-right-radius: 4px;
+		}
+		QDateEdit::down-arrow {
+			width: 0px;
+			height: 0px;
+			border-left: 5px solid transparent;
+			border-right: 5px solid transparent;
+			border-top: 6px solid white;
+		}
+	)");
+
+	QHBoxLayout* buttonLayout = new QHBoxLayout();
+	buttonLayout->setSpacing(15);
+
+	backButton = new QPushButton("Vissza", formWidget);
+	backButton->setFixedSize(200, 50);
+	backButton->setCursor(Qt::PointingHandCursor);
 	backButton->setStyleSheet(R"(
 		QPushButton {
 			font-size: 14pt;
 			font-weight: bold;
-			color: rgba(0, 0, 0, 0.65);
+			color: #4A5568;
 			background-color: white;
-			border-radius: 5px;
-			border: 2px solid #5fa8d3;
-			padding: 6px 18px;
+			border: 2px solid #1B365D;
+			border-radius: 8px;
 		}
-
 		QPushButton:hover {
-			background-color: #f0ead6;
+			background-color: #F7FAFC;
+			border-color: #2C5282;
 		}
-
 		QPushButton:pressed {
-			background-color: #5fa8d3;
-			color: white;
+			background-color: #EDF2F7;
 		}
 	)");
 
-	connect(backButton, &QPushButton::clicked,
-		this, &AddContentWidget::BackRequested);
-
-	QHBoxLayout* headerLayout = SetupHeaderLayout();
-	headerWidget->setLayout(headerLayout);
-
-	headerLayout->addWidget(titleLabel);
-	headerLayout->addWidget(backButton, 0, Qt::AlignRight);
-
-	return headerWidget;
-}
-
-QWidget* AddContentWidget::CreateFormWidget()
-{
-	QWidget* formWidget = new QWidget(this);
-	formWidget->setObjectName("formWidget");
-
-	nameEdit = new QLineEdit(formWidget);
-	amountEdit = new QLineEdit(formWidget);
-	dateEdit = new QDateEdit(formWidget);
 	addButton = new QPushButton("Hozzáadás", formWidget);
-
-	connect(addButton, &QPushButton::clicked, this, [this]() {
-		Invoice invoice;
-		invoice.nev = nameEdit->text();
-		invoice.osszeg = amountEdit->text().toDouble();
-		invoice.datum = dateEdit->date().toString("yyyy-MM-dd");
-
-		emit AddRequested(invoice);
-	});
-
-	nameEdit->setPlaceholderText("Név");
-	amountEdit->setPlaceholderText("Összeg");
-	dateEdit->setCalendarPopup(true);
-	dateEdit->setDate(QDate::currentDate());
-	dateEdit->setDisplayFormat("yyyy-MM-dd");
-	dateEdit->calendarWidget()->setStyleSheet(R"(
-		QCalendarWidget {
-			background-color: white;
-			color: black;
-			border: 1px solid black;
-		}
-
-		QCalendarWidget QWidget {
-			background-color: white;
-			color: black;
-		}
-
-		QCalendarWidget QToolButton {
-			color: black;
-			background-color: white;
-			border: 1px solid black;
-			border-radius: 3px;
-			padding: 4px;
-		}
-
-		QCalendarWidget QMenu {
-			background-color: white;
-			color: black;
-			border: 1px solid black;
-		}
-
-		QCalendarWidget QSpinBox {
-			color: black;
-			background-color: white;
-			border: 1px solid black;
-		}
-
-		QCalendarWidget QAbstractItemView {
-			color: black;
-			background-color: white;
-			selection-background-color: #5fa8d3;
-			selection-color: white;
-			border: 1px solid black;
-		}
-	)");
+	addButton->setFixedSize(200, 50);
 	addButton->setCursor(Qt::PointingHandCursor);
-	addButton->setFixedHeight(44);
-
-	QVBoxLayout* formLayout = SetupFormLayout();
-	formWidget->setLayout(formLayout);
-
-	formLayout->addWidget(nameEdit);
-	formLayout->addWidget(amountEdit);
-	formLayout->addWidget(dateEdit);
-	formLayout->addWidget(addButton, 0, Qt::AlignRight);
-
-	formWidget->setStyleSheet(R"(
-		#formWidget {
-			background-color: white;
-			border: 1px solid rgba(0, 0, 0, 0.3);
-			border-radius: 10px;
-		}
-
-		QLineEdit,
-		QDateEdit {
-			color: black;
-			background-color: white;
-			border: 2px solid #5fa8d3;
-			border-radius: 5px;
-			padding: 8px;
-			font-size: 16pt;
-		}
-
-		QLineEdit:focus,
-		QDateEdit:focus {
-			border-color: #4f98c3;
-		}
-
+	addButton->setStyleSheet(R"(
 		QPushButton {
 			font-size: 14pt;
 			font-weight: bold;
 			color: white;
-			background-color: #5fa8d3;
-			border-radius: 5px;
+			background-color: #059669;
 			border: none;
-			padding: 8px 20px;
+			border-radius: 8px;
 		}
-
 		QPushButton:hover {
-			background-color: #4f98c3;
+			background-color: #047857;
 		}
-
 		QPushButton:pressed {
-			background-color: #3f88b3;
+			background-color: #065F46;
 		}
 	)");
 
-	return formWidget;
+	buttonLayout->addWidget(backButton);
+	buttonLayout->addWidget(addButton);
+
+	formLayout->addWidget(titleLabel);
+	formLayout->addWidget(nameEdit);
+	formLayout->addWidget(amountEdit);
+	formLayout->addWidget(dateEdit);
+	formLayout->addLayout(buttonLayout);
+
+	layout->addWidget(formWidget);
+
+	connect(addButton, &QPushButton::clicked, this, [this]() {
+		QString name = nameEdit->text();
+		QString amountStr = amountEdit->text();
+		emit AddRequested(Invoice{ 0, name, amountStr.toDouble(), dateEdit->date().toString("yyyy-MM-dd") });
+	});
+	connect(backButton, &QPushButton::clicked, this, &AddContentWidget::BackRequested);
 }

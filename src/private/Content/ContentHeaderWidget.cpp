@@ -17,8 +17,8 @@ ContentHeaderWidget::ContentHeaderWidget(QWidget* parent)
 	SetupSortComboBox();
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->setSpacing(0);
+	layout->setContentsMargins(0, 10, 0, 0);
+	layout->setSpacing(16);
 
 	layout->addWidget(CreateProfitWidget(), 0, Qt::AlignHCenter);
 	layout->addWidget(CreateToolBarWidget());
@@ -43,52 +43,43 @@ void ContentHeaderWidget::SetupSortComboBox()
 		emit SortChanged(sortOption);
 	});
 
-
-
-
 	SortComboBox->setStyleSheet(R"(
 		QComboBox#sortComboBox {
-			color: rgba(0, 0, 0, 0.75);
-			background-color: #fff5ee;
-			border: 2px solid #5fa8d3;
+			color: #4A5568;
+			background-color: white;
+			border: 2px solid #1B365D;
 			border-radius: 6px;
 			padding: 6px 28px 6px 10px;
 			font-size: 13pt;
 			font-weight: bold;
 		}
-
 		QComboBox#sortComboBox:hover {
-			background-color: white;
-			border-color: #4f98c3;
+			border-color: #2C5282;
 		}
-
 		QComboBox#sortComboBox:focus {
-			border-color: #3f88b3;
+			border-color: #059669;
 		}
-
 		QComboBox#sortComboBox::drop-down {
 			subcontrol-origin: padding;
 			subcontrol-position: top right;
 			width: 28px;
-			border-left: 1px solid #5fa8d3;
+			border-left: 1px solid #1B365D;
 			border-top-right-radius: 4px;
 			border-bottom-right-radius: 4px;
-			background-color: #5fa8d3;
+			background-color: #1B365D;
 		}
-
 		QComboBox#sortComboBox::down-arrow {
 			width: 0px;
 			height: 0px;
 			border-left: 5px solid transparent;
 			border-right: 5px solid transparent;
-			border-top: 6px solid #f0ead6;
+			border-top: 6px solid white;
 		}
-
 		QComboBox#sortComboBox QAbstractItemView {
-			color: black;
+			color: #4A5568;
 			background-color: white;
-			border: 1px solid #5fa8d3;
-			selection-background-color: #5fa8d3;
+			border: 1px solid #1B365D;
+			selection-background-color: #1B365D;
 			selection-color: white;
 			outline: none;
 			font-size: 12pt;
@@ -104,21 +95,27 @@ void ContentHeaderWidget::UpdateProfit(const QString& profit)
 QWidget* ContentHeaderWidget::CreateToolBarWidget()
 {
 	QWidget* buttonWidget = new QWidget(this);
-	QHBoxLayout* buttonLayout = new QHBoxLayout(buttonWidget);
-	buttonLayout->setContentsMargins(0, 10, 0, 10);
+	QGridLayout* grid = new QGridLayout(buttonWidget);
+	grid->setContentsMargins(0, 10, 0, 10);
+	grid->setColumnStretch(0, 1);
+	grid->setColumnStretch(2, 1);
 
-	QPushButton* addButton = CreateAddButton(buttonWidget);
-	QPushButton* editButton = CreateEditButton(buttonWidget);
-	QPushButton* deleteButton = CreateDeleteButton(buttonWidget);
+	QWidget* leftWidget = new QWidget(buttonWidget);
+	QHBoxLayout* leftLayout = new QHBoxLayout(leftWidget);
+	leftLayout->setContentsMargins(0, 0, 0, 0);
+	leftLayout->addWidget(CreateSearchLineEdit(leftWidget));
 
-	buttonLayout->addWidget(CreateSearchLineEdit(buttonWidget));
-	buttonLayout->addStretch();
-	buttonLayout->addWidget(CreateMonthWidget());
-	buttonLayout->addStretch();
-	buttonLayout->addWidget(SortComboBox);
-	buttonLayout->addWidget(addButton);
-	buttonLayout->addWidget(editButton);
-	buttonLayout->addWidget(deleteButton);
+	QWidget* rightWidget = new QWidget(buttonWidget);
+	QHBoxLayout* rightLayout = new QHBoxLayout(rightWidget);
+	rightLayout->setContentsMargins(0, 0, 0, 0);
+	rightLayout->addWidget(SortComboBox);
+	rightLayout->addWidget(CreateAddButton(rightWidget));
+	rightLayout->addWidget(CreateEditButton(rightWidget));
+	rightLayout->addWidget(CreateDeleteButton(rightWidget));
+
+	grid->addWidget(leftWidget, 0, 0, Qt::AlignLeft);
+	grid->addWidget(CreateMonthWidget(), 0, 1, Qt::AlignCenter);
+	grid->addWidget(rightWidget, 0, 2, Qt::AlignRight);
 
 	return buttonWidget;
 }
@@ -126,7 +123,7 @@ QWidget* ContentHeaderWidget::CreateToolBarWidget()
 QPushButton* ContentHeaderWidget::CreateAddButton(QWidget* buttonWidget)
 {
 	QPushButton* addButton = new QPushButton("+", buttonWidget);
-	addButton->setStyleSheet(ButtonStyling);
+	addButton->setStyleSheet(GreenButtonStyle);
 	addButton->setFixedSize(QSize{ 50,50 });
 	addButton->setCursor(Qt::PointingHandCursor);
 
@@ -138,7 +135,7 @@ QPushButton* ContentHeaderWidget::CreateAddButton(QWidget* buttonWidget)
 QPushButton* ContentHeaderWidget::CreateEditButton(QWidget* parent)
 {
 	QPushButton* editButton = new QPushButton("/", parent);
-	editButton->setStyleSheet(ButtonStyling);
+	editButton->setStyleSheet(NavyButtonStyle);
 	editButton->setFixedSize(QSize{ 50,50 });
 	editButton->setCursor(Qt::PointingHandCursor);
 	connect(editButton, &QPushButton::clicked, this, &ContentHeaderWidget::EditButtonClicked);
@@ -149,7 +146,7 @@ QPushButton* ContentHeaderWidget::CreateEditButton(QWidget* parent)
 QPushButton* ContentHeaderWidget::CreateDeleteButton(QWidget* parent)
 {
 	QPushButton* deleteButton = new QPushButton("x", parent);
-	deleteButton->setStyleSheet(ButtonStyling);
+	deleteButton->setStyleSheet(NavyButtonStyle);
 	deleteButton->setFixedSize(QSize{ 50,50 });
 	deleteButton->setCursor(Qt::PointingHandCursor);
 	connect(deleteButton, &QPushButton::clicked, this, &ContentHeaderWidget::DeleteButtonClicked);
@@ -159,35 +156,55 @@ QPushButton* ContentHeaderWidget::CreateDeleteButton(QWidget* parent)
 QWidget* ContentHeaderWidget::CreateHeaderWidget()
 {
 	QWidget* HeaderWidget = new QWidget(this);
+	HeaderWidget->setStyleSheet(R"(
+		QWidget {
+			border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+			background-color: #1B365D;
+		}
+	)");
+
 	QLabel* idLabel = new QLabel("ID", HeaderWidget);
 	QLabel* nameLabel = new QLabel("Név", HeaderWidget);
 	QLabel* amountLabel = new QLabel("Összeg", HeaderWidget);
 	QLabel* dateLabel = new QLabel("Dátum", HeaderWidget);
-	QHBoxLayout* HeaderLayout = new QHBoxLayout(HeaderWidget);
-	HeaderLayout->addWidget(idLabel);
-	HeaderLayout->addWidget(nameLabel);
-	HeaderLayout->addWidget(amountLabel);
-	HeaderLayout->addWidget(dateLabel);
-	HeaderLayout->setSpacing(0);
-	HeaderLayout->setContentsMargins(0, 0, 0, 0);
 
-	QString headerStyle = R"(
+	QString headerLabelStyle = R"(
 		QLabel {
 			font-weight: bold;
 			font-size: 18pt;
-			color: #f0ead6;
+			color: white;
 			padding: 8px;
-		}
-		QWidget {
-			border-bottom: 2px solid #f0ead6;
-			background-color: #5fa8d3;
 		}
 	)";
 
-	idLabel->setStyleSheet(headerStyle);
-	nameLabel->setStyleSheet(headerStyle);
-	amountLabel->setStyleSheet(headerStyle);
-	dateLabel->setStyleSheet(headerStyle);
+	idLabel->setFixedWidth(120);
+	idLabel->setStyleSheet(headerLabelStyle);
+	nameLabel->setMinimumWidth(200);
+	nameLabel->setStyleSheet(headerLabelStyle);
+	nameLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+	amountLabel->setMinimumWidth(200);
+	amountLabel->setStyleSheet(headerLabelStyle);
+	amountLabel->setAlignment(Qt::AlignCenter);
+	dateLabel->setMinimumWidth(200);
+	dateLabel->setStyleSheet(headerLabelStyle);
+	dateLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+	QWidget* leftGroup = new QWidget(HeaderWidget);
+	QHBoxLayout* leftLayout = new QHBoxLayout(leftGroup);
+	leftLayout->setContentsMargins(0, 0, 0, 0);
+	leftLayout->setSpacing(0);
+	leftLayout->addWidget(idLabel);
+	leftLayout->addWidget(nameLabel);
+
+	QGridLayout* grid = new QGridLayout(HeaderWidget);
+	grid->setContentsMargins(0, 0, 0, 0);
+	grid->setSpacing(0);
+	grid->setColumnStretch(0, 1);
+	grid->setColumnStretch(2, 1);
+
+	grid->addWidget(leftGroup, 0, 0, Qt::AlignLeft);
+	grid->addWidget(amountLabel, 0, 1, Qt::AlignCenter);
+	grid->addWidget(dateLabel, 0, 2, Qt::AlignRight);
 
 	return HeaderWidget;
 }
@@ -195,33 +212,33 @@ QWidget* ContentHeaderWidget::CreateHeaderWidget()
 QWidget* ContentHeaderWidget::CreateProfitWidget()
 {
 	QWidget* profitWidget = new QWidget(this);
-	profitWidget->setFixedSize(180, 180);
+	profitWidget->setFixedSize(250, 250);
 
 	profitLabel = new QLabel("Bevétel: 0 €", profitWidget);
 	profitLabel->setAlignment(Qt::AlignCenter);
+	profitLabel->setWordWrap(true);
 
 	QHBoxLayout* layout = new QHBoxLayout(profitWidget);
 	layout->addWidget(profitLabel);
-	layout->setContentsMargins(0, 0, 0, 0);
+	layout->setContentsMargins(15, 0, 15, 0);
 	layout->setAlignment(Qt::AlignCenter);
 
 	profitWidget->setStyleSheet(R"(
 		QWidget {
-			background-color: #5fa8d3;
-			border-radius: 90px;
+			background-color: #1B365D;
+			border-radius: 125px;
 		}
-
 		QLabel {
 			color: white;
 			font-weight: bold;
-			font-size: 20pt;
+			font-size: 18pt;
 		}
 	)");
 
 	QGraphicsDropShadowEffect* shadow = new QGraphicsDropShadowEffect(profitWidget);
-	shadow->setBlurRadius(20);
-	shadow->setColor(QColor("#5fa8d3"));
-	shadow->setOffset(0, 0);
+	shadow->setBlurRadius(30);
+	shadow->setColor(QColor("#1B365D"));
+	shadow->setOffset(0, 4);
 	profitWidget->setGraphicsEffect(shadow);
 
 	return profitWidget;
@@ -247,8 +264,7 @@ QWidget* ContentHeaderWidget::CreateMonthWidget()
 		QPushButton {
 			font-size: 18pt;
 			font-weight: bold;
-			color: black;
-			border-radius: 6px;
+			color: #1B365D;
 			padding: 0px;
 		}
 	)");
@@ -267,10 +283,7 @@ QWidget* ContentHeaderWidget::CreateMonthWidget()
 		QLabel {
 			font-size: 14pt;
 			font-weight: bold;
-			color: #333333;
-			background-color: #fff5ee;
-			border-left: none;
-			border-right: none;
+			color: #1B365D;
 			padding: 0px;
 		}
 	)");
@@ -282,8 +295,7 @@ QWidget* ContentHeaderWidget::CreateMonthWidget()
 		QPushButton {
 			font-size: 18pt;
 			font-weight: bold;
-			color: black;
-			border-radius: 6px;
+			color: #1B365D;
 			padding: 0px;
 		}
 	)");
@@ -310,15 +322,18 @@ QLineEdit* ContentHeaderWidget::CreateSearchLineEdit(QWidget* parent)
 	searchLineEdit->setStyleSheet(R"(
 		QLineEdit {
 			font-size: 13pt;
-			color: #333333;
-			background-color: #fff5ee;
-			border: 2px solid #5fa8d3;
+			color: #4A5568;
+			background-color: white;
+			border: 2px solid #1B365D;
 			border-radius: 6px;
 			padding: 6px 10px;
 		}
 		QLineEdit:focus {
-			border-color: #3f88b3;
+			border-color: #059669;
 			background-color: white;
+		}
+		QLineEdit::placeholder {
+			color: #A0AEC0;
 		}
 	)");
 

@@ -2,9 +2,7 @@
 #include <QWidget>
 #include "Invoice.h"
 
-class AddButton;
 class Database;
-class Sidebar;
 class Content;
 
 class MainWindow : public QWidget {
@@ -19,11 +17,7 @@ private slots:
 	void onInvoiceSelected(int id);
 
 private:
-	// Buttons
-	AddButton* addButton = nullptr;
 	Database* database = nullptr;
-
-	Sidebar* sideBar = nullptr;
 	Content* contentWidget = nullptr;
 
 	int selectedInvoiceId = -1;
