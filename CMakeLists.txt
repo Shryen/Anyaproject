@@ -4,7 +4,7 @@ project(CMakeTesting)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_PREFIX_PATH "C:/Qt/6.10.1/msvc2022_64")
+set(CMAKE_PREFIX_PATH "C:/Qt/6.11.1/msvc2022_64")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -46,4 +46,10 @@ target_include_directories(CMakeTesting PRIVATE
 target_link_libraries(CMakeTesting PRIVATE
     Qt6::Widgets
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/sqlite/sqlite3.lib
+)
+
+ add_custom_command(TARGET CMakeTesting POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/sqlite/sqlite3.dll
+    $<TARGET_FILE_DIR:CMakeTesting>
 )

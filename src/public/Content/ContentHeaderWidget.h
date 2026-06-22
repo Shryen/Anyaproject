@@ -1,9 +1,11 @@
 #pragma once
+#include <QDate>
 #include <QWidget>
 
 class QLabel;
 class QComboBox;
 class QPushButton;
+class QLineEdit;
 
 class ContentHeaderWidget : public QWidget {
 	Q_OBJECT
@@ -18,9 +20,11 @@ signals:
 	void AddButtonClicked();
 	void DeleteButtonClicked();
 	void SortChanged(int sortOption);
+	void SearchChanged(const QString& filter);
+	void MonthChanged(int month, int year);
 
 private:
-	QWidget* CreateButtonWidget();
+	QWidget* CreateToolBarWidget();
 	QPushButton* CreateAddButton(QWidget* parent = nullptr);
 	QPushButton* CreateDeleteButton(QWidget* parent = nullptr);
 
@@ -28,6 +32,16 @@ private:
 	QWidget* CreateProfitWidget();
 
 	QComboBox* SortComboBox;
+	QDate currentDate;
+
+	QLineEdit* searchLineEdit = nullptr;
+	QLineEdit* CreateSearchLineEdit(QWidget* parent = nullptr);
+
+	void UpdateMonthLabel();
+	QWidget* CreateMonthWidget();
+	QPushButton* monthLeftButton = nullptr;
+	QLabel* monthLabel = nullptr;
+	QPushButton* monthRightButton = nullptr;
 
 	QLabel* profitLabel;
 

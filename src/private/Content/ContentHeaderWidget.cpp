@@ -6,10 +6,14 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QComboBox>
+#include <QLineEdit>
+#include <QDate>
+#include <QLocale>
 
 ContentHeaderWidget::ContentHeaderWidget(QWidget* parent)
 	: QWidget(parent)
 {
+	currentDate = QDate::currentDate();
 	SetupSortComboBox();
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
@@ -17,8 +21,10 @@ ContentHeaderWidget::ContentHeaderWidget(QWidget* parent)
 	layout->setSpacing(0);
 
 	layout->addWidget(CreateProfitWidget(), 0, Qt::AlignHCenter);
-	layout->addWidget(CreateButtonWidget());
+	layout->addWidget(CreateToolBarWidget());
 	layout->addWidget(CreateHeaderWidget());
+
+	UpdateMonthLabel();
 }
 
 void ContentHeaderWidget::SetupSortComboBox()
@@ -95,16 +101,18 @@ void ContentHeaderWidget::UpdateProfit(const QString& profit)
 	profitLabel->setText(QString("Bevétel: %1€").arg(profit));
 }
 
-QWidget* ContentHeaderWidget::CreateButtonWidget()
+QWidget* ContentHeaderWidget::CreateToolBarWidget()
 {
 	QWidget* buttonWidget = new QWidget(this);
 	QHBoxLayout* buttonLayout = new QHBoxLayout(buttonWidget);
 	buttonLayout->setContentsMargins(0, 10, 0, 10);
-	buttonLayout->setAlignment(Qt::AlignRight);
 
 	QPushButton* addButton = CreateAddButton(buttonWidget);
 	QPushButton* deleteButton = CreateDeleteButton(buttonWidget);
 
+	buttonLayout->addWidget(CreateSearchLineEdit(buttonWidget));
+	buttonLayout->addStretch();
+	buttonLayout->addWidget(CreateMonthWidget());
 	buttonLayout->addStretch();
 	buttonLayout->addWidget(SortComboBox);
 	buttonLayout->addWidget(addButton);
@@ -204,4 +212,106 @@ QWidget* ContentHeaderWidget::CreateProfitWidget()
 	profitWidget->setGraphicsEffect(shadow);
 
 	return profitWidget;
+}
+
+void ContentHeaderWidget::UpdateMonthLabel()
+{
+	QLocale hu(QLocale::Hungarian);
+	monthLabel->setText(hu.toString(currentDate, "MMMM yyyy"));
+}
+
+QWidget* ContentHeaderWidget::CreateMonthWidget()
+{
+	QWidget* widget = new QWidget(this);
+	QHBoxLayout* layout = new QHBoxLayout(widget);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->setSpacing(0);
+
+	monthLeftButton = new QPushButton("<", widget);
+	monthLeftButton->setFixedSize(40, 50);
+	monthLeftButton->setCursor(Qt::PointingHandCursor);
+	monthLeftButton->setStyleSheet(R"(
+		QPushButton {
+			font-size: 18pt;
+			font-weight: bold;
+			color: black;
+			border-radius: 6px;
+			padding: 0px;
+		}
+	)");
+
+	connect(monthLeftButton, &QPushButton::clicked, this, [this]() {
+		currentDate = currentDate.addMonths(-1);
+		UpdateMonthLabel();
+		emit MonthChanged(currentDate.month(), currentDate.year());
+	});
+
+	monthLabel = new QLabel(widget);
+	monthLabel->setAlignment(Qt::AlignCenter);
+	monthLabel->setFixedWidth(160);
+	monthLabel->setFixedHeight(50);
+	monthLabel->setStyleSheet(R"(
+		QLabel {
+			font-size: 14pt;
+			font-weight: bold;
+			color: #333333;
+			background-color: #fff5ee;
+			border-left: none;
+			border-right: none;
+			padding: 0px;
+		}
+	)");
+
+	monthRightButton = new QPushButton(">", widget);
+	monthRightButton->setFixedSize(40, 50);
+	monthRightButton->setCursor(Qt::PointingHandCursor);
+	monthRightButton->setStyleSheet(R"(
+		QPushButton {
+			font-size: 18pt;
+			font-weight: bold;
+			color: black;
+			border-radius: 6px;
+			padding: 0px;
+		}
+	)");
+
+	connect(monthRightButton, &QPushButton::clicked, this, [this]() {
+		currentDate = currentDate.addMonths(1);
+		UpdateMonthLabel();
+		emit MonthChanged(currentDate.month(), currentDate.year());
+	});
+
+	layout->addWidget(monthLeftButton);
+	layout->addWidget(monthLabel);
+	layout->addWidget(monthRightButton);
+
+	return widget;
+}
+
+QLineEdit* ContentHeaderWidget::CreateSearchLineEdit(QWidget* parent)
+{
+	searchLineEdit = new QLineEdit(parent);
+	searchLineEdit->setPlaceholderText("Keresés...");
+	searchLineEdit->setFixedHeight(50);
+	searchLineEdit->setMinimumWidth(250);
+	searchLineEdit->setStyleSheet(R"(
+		QLineEdit {
+			font-size: 13pt;
+			color: #333333;
+			background-color: #fff5ee;
+			border: 2px solid #5fa8d3;
+			border-radius: 6px;
+			padding: 6px 10px;
+		}
+		QLineEdit:focus {
+			border-color: #3f88b3;
+			background-color: white;
+		}
+	)");
+
+	connect(searchLineEdit, &QLineEdit::textChanged, this, [this](const QString& text) {
+		emit SearchChanged(text);
+		});
+
+	return searchLineEdit;
 }

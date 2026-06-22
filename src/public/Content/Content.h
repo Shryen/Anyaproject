@@ -10,6 +10,7 @@ class QScrollArea;
 class QPaintEvent;
 class AddContentWidget;
 class ContentHeaderWidget;
+class QDate;
 
 enum class SortType {
 	ById,
@@ -40,6 +41,8 @@ signals:
 
 private slots:
 	void OnInvoiceSelected(int invoiceId);
+	void OnSearchChanged(const QString& filter);
+	void OnMonthChanged(int month, int year);
 
 private:
 	QVBoxLayout* m_layout = nullptr;
@@ -51,10 +54,14 @@ private:
 	AddContentWidget* addContentWidget = nullptr;
 	ContentHeaderWidget* headerWidget = nullptr;
 
-	SortType currentSort = SortType::ById;
 
 	QLabel* SetupTitleLabel();
 	void SetupScrollArea();
 	void SetupWidget();
 	void SetupContentWidget();
+
+	// Searching and filtering
+	SortType currentSort = SortType::ById;
+	QVector<Invoice> invoiceCache;
+	QString currentSearchFilter;
 };

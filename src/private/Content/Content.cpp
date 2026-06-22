@@ -9,6 +9,7 @@
 #include "Invoice/InvoiceWidget.h"
 #include <QStackedWidget>
 #include "Content/AddContentWidget.h"
+#include <QDate>
 
 
 Content::Content(QWidget* parent) : QWidget(parent)
@@ -16,6 +17,7 @@ Content::Content(QWidget* parent) : QWidget(parent)
 	addContentWidget = new AddContentWidget(stackedWidget);
 	SetupWidget();
 	BindDependencies();
+	OnMonthChanged(QDate::currentDate().month(), QDate::currentDate().year());
 }
 
 void Content::BindDependencies()
@@ -44,6 +46,10 @@ void Content::BindDependencies()
 		currentSort = static_cast<SortType>(sortOption);
 		emit OnListChanged();
 	});
+
+	connect(headerWidget, &ContentHeaderWidget::SearchChanged, this, &Content::OnSearchChanged);
+
+	connect(headerWidget, &ContentHeaderWidget::MonthChanged, this, &Content::OnMonthChanged);
 }
 
 void Content::UpdateContent(Database* db) {
@@ -54,37 +60,69 @@ void Content::UpdateContent(Database* db) {
 		delete item;
 	}
 
-	QVector<Invoice> invoices = db->getAllInvoices();
+	invoiceCache = db->getAllInvoices();
 
 	switch (currentSort) {
 		case SortType::ById:
-			std::sort(invoices.begin(), invoices.end(), [](const Invoice& a, const Invoice& b) {
+			std::sort(invoiceCache.begin(), invoiceCache.end(), [](const Invoice& a, const Invoice& b) {
 				return a.id > b.id;
 			});
 		break;
 		case SortType::ByName:
-			std::sort(invoices.begin(), invoices.end(), [](const Invoice& a, const Invoice& b) {
+			std::sort(invoiceCache.begin(), invoiceCache.end(), [](const Invoice& a, const Invoice& b) {
 				return a.nev < b.nev;
 			});
 			break;
 		case SortType::ByAmount:
-			std::sort(invoices.begin(), invoices.end(), [](const Invoice& a, const Invoice& b) {
+			std::sort(invoiceCache.begin(), invoiceCache.end(), [](const Invoice& a, const Invoice& b) {
 				return a.osszeg > b.osszeg;
 			});
 			break;
 		case SortType::ByDate:
-			std::sort(invoices.begin(), invoices.end(), [](const Invoice& a, const Invoice& b) {
+			std::sort(invoiceCache.begin(), invoiceCache.end(), [](const Invoice& a, const Invoice& b) {
 				return a.datum > b.datum;
 			});
 			break;
 	}
 
 
-	for(const Invoice& invoice : invoices){
+	for(const Invoice& invoice : invoiceCache){
 		InvoiceWidget* widget = new InvoiceWidget(invoice, scrollArea->widget());
 		invoiceLayout->addWidget(widget);
 
 		connect(widget, &InvoiceWidget::InvoiceSelected, this, &Content::OnInvoiceSelected);
+	}
+
+	OnSearchChanged(currentSearchFilter);
+}
+
+void Content::OnSearchChanged(const QString& filter)
+{
+	for (int i = 0; i < invoiceLayout->count(); ++i) {
+		InvoiceWidget* widgetAtIndex = qobject_cast<InvoiceWidget*>(invoiceLayout->itemAt(i)->widget());
+		if (!widgetAtIndex) continue;
+
+		if (filter.isEmpty()) {
+			widgetAtIndex->setVisible(true);
+		} else {
+			const Invoice& inv = invoiceCache[i];
+			bool matches = inv.nev.contains(filter, Qt::CaseInsensitive);
+			widgetAtIndex->setVisible(matches);
+		}
+	}
+
+	currentSearchFilter = filter;
+}
+
+void Content::OnMonthChanged(int month, int year)
+{
+	QString monthStr = QString("%1-%2").arg(year).arg(month, 2, 10, QChar('0'));
+	for (int i = 0; i < invoiceLayout->count(); ++i) {
+		InvoiceWidget* widgetAtIndex = qobject_cast<InvoiceWidget*>(invoiceLayout->itemAt(i)->widget());
+		if (!widgetAtIndex) continue;
+
+		bool match = widgetAtIndex->GetInvoiceYear() == year && widgetAtIndex->GetInvoiceMonth() == month;
+		widgetAtIndex->setVisible(match);
 	}
 }
 
